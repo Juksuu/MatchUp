@@ -7,39 +7,30 @@ namespace MatchUp;
 
 public class SetupState : BaseState
 {
-    private Dictionary<string, Action<CCSPlayerController, string[]?>> commandActions = new Dictionary<string, Action<CCSPlayerController, string[]?>>();
 
     private ChatMenu mapSelection = new ChatMenu("Map Selection");
 
-    public override void Enter(GameState oldState)
+    public SetupState() : base()
     {
-        Console.WriteLine("Switched to Setup state");
-
-
         var mapChangeHandle = (CCSPlayerController player, ChatMenuOption option) => OnMatchMapChange(player, option.Text);
         foreach (string map in MatchConfig.mapPool)
         {
             mapSelection.AddMenuOption(map, mapChangeHandle);
         }
 
-        commandActions["!map"] = (player, args) => ChatMenus.OpenMenu(player, mapSelection);
-        commandActions["!team_size"] = (player, args) => OnTeamSize(player, args);
-        commandActions["!config"] = (player, option) => MatchConfig.printToPlayer(player);
-        commandActions["!start"] = (player, option) => OnMatchStart(player);
-        commandActions["!help"] = (player, option) => OnHelp(player);
+        commandActions["map"] = (userid, args) => ChatMenus.OpenMenu(Utilities.GetPlayerFromUserid(userid), mapSelection);
+        commandActions["team_size"] = (userid, args) => OnTeamSize(userid, args);
+        commandActions["config"] = (userid, option) => MatchConfig.printToPlayer(userid);
+        commandActions["start"] = (userid, option) => OnMatchStart();
+        commandActions["help"] = (userid, option) => OnHelp(userid);
+    }
+
+    public override void Enter(GameState oldState)
+    {
+        Console.WriteLine("Switched to Setup state");
     }
 
     public override void Leave() { }
-
-    public override HookResult OnChatCommand(CCSPlayerController player, string command, string[]? args)
-    {
-        Console.WriteLine("Received a command Setup", command);
-        if (commandActions.ContainsKey(command))
-        {
-            commandActions[command](player, args);
-        }
-        return HookResult.Changed;
-    }
 
     private void OnMatchMapChange(CCSPlayerController player, string selection)
     {
@@ -47,14 +38,20 @@ public class SetupState : BaseState
         MatchConfig.map = selection;
     }
 
-    private void OnHelp(CCSPlayerController player)
+    private void OnHelp(int userid)
     {
-        player.PrintToChat($@"Options can be changed with
-                {ChatColors.Green}!map {ChatColors.Default} and {ChatColors.Green} !team_size <number>");
+        var player = Utilities.GetPlayerFromUserid(userid);
+        player.PrintToChat($" {ChatColors.Yellow}Commands:");
+        player.PrintToChat($" {ChatColors.Green}!map {ChatColors.Default} select map for match");
+        player.PrintToChat($" {ChatColors.Green}!start {ChatColors.Default} start match with current config");
+        player.PrintToChat($" {ChatColors.Green}!config {ChatColors.Default} print current match config");
+        player.PrintToChat($" {ChatColors.Green}!team_size {ChatColors.Default} set team size for match");
     }
 
-    private void OnTeamSize(CCSPlayerController player, string[]? args)
+    private void OnTeamSize(int userid, string[]? args)
     {
+        var player = Utilities.GetPlayerFromUserid(userid);
+
         var result = 0;
         if (args != null && Int32.TryParse(args[0], out result))
         {
@@ -67,7 +64,7 @@ public class SetupState : BaseState
         }
     }
 
-    private void OnMatchStart(CCSPlayerController player)
+    private void OnMatchStart()
     {
         if (Server.MapName == MatchConfig.map)
         {

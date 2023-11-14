@@ -35,17 +35,18 @@ public class MatchUp : BasePlugin
         }
 
         var result = @event.Text.Split(" ");
-        var command = result[0];
+        var command = result[0].Trim(new Char[] { '!', '.' });
 
         var state = StateMachine.getCurrentState();
 
         if (result.Length > 1)
         {
-            var args = result.Skip(1);
-            Console.WriteLine($"Got command with args: {command}, {string.Join(", ", args.ToArray())}");
-            return state.OnChatCommand(player, command, args.ToArray());
+            var args = result.Skip(1).ToArray();
+            Console.WriteLine($"Got command with args: {command}, {string.Join(", ", args)}");
+            return state.OnChatCommand(@event.Userid, command!, args);
         }
 
-        return state.OnChatCommand(player, command);
+        Console.WriteLine($"Got command: {command}");
+        return state.OnChatCommand(@event.Userid, command!);
     }
 }

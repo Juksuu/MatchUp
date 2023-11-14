@@ -1,5 +1,4 @@
 using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
 
 namespace MatchUp;
 
@@ -11,11 +10,6 @@ public class LoadingState : BaseState
     }
 
     public override void Leave() { }
-
-    public override HookResult OnChatCommand(CCSPlayerController player, string command, string[]? args)
-    {
-        return HookResult.Continue;
-    }
 
 
     public override void OnMapStart()

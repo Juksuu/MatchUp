@@ -1,4 +1,4 @@
-using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MatchUp;
@@ -10,8 +10,9 @@ public static class MatchConfig
     public static int playersPerTeam = 5;
     public static string map = "de_mirage";
 
-    public static void printToPlayer(CCSPlayerController player)
+    public static void printToPlayer(int userId)
     {
+        var player = Utilities.GetPlayerFromUserid(userId);
         player.PrintToChat($" {ChatColors.Green} Current config");
         player.PrintToChat($" {ChatColors.Grey} Map: {ChatColors.Gold} {map}");
         player.PrintToChat($" {ChatColors.Grey} Players per team: {ChatColors.Gold} {playersPerTeam}");

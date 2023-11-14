@@ -14,11 +14,21 @@ public enum GameState
 
 public abstract class BaseState
 {
+    protected Dictionary<string, Action<int, string[]?>> commandActions = new Dictionary<string, Action<int, string[]?>>();
+
     public abstract void Enter(GameState oldState);
     public abstract void Leave();
 
     public abstract void OnMapStart();
-    public abstract HookResult OnChatCommand(CCSPlayerController player, string command, string[]? args = null);
+
+    public virtual HookResult OnChatCommand(int userid, string command, string[]? args = null)
+    {
+        if (commandActions.ContainsKey(command))
+        {
+            commandActions[command](userid, args);
+        }
+        return HookResult.Changed;
+    }
 }
 
 public static class StateMachine
