@@ -56,4 +56,11 @@ public class MatchUp : BasePlugin
         var state = StateMachine.getCurrentState();
         return state.OnPlayerTeam(@event);
     }
+
+    [GameEventHandler]
+    public HookResult OnMatchEnd(EventCsWinPanelMatch @event, GameEventInfo info)
+    {
+        var state = StateMachine.getCurrentState();
+        return state.OnMatchEnd(@event);
+    }
 }

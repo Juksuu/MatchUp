@@ -92,4 +92,9 @@ public class SetupState : BaseState
     {
         return HookResult.Continue;
     }
+
+    public override HookResult OnMatchEnd(EventCsWinPanelMatch @event)
+    {
+        return HookResult.Continue;
+    }
 }

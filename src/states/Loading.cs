@@ -12,7 +12,6 @@ public class LoadingState : BaseState
 
     public override void Leave() { }
 
-
     public override void OnMapStart()
     {
         Console.WriteLine("Executing warmup cfg");
@@ -22,6 +21,11 @@ public class LoadingState : BaseState
         {
             StateMachine.SwitchState(GameState.Setup);
         });
+    }
+
+    public override HookResult OnMatchEnd(EventCsWinPanelMatch @event)
+    {
+        return HookResult.Continue;
     }
 
     public override HookResult OnPlayerTeam(EventPlayerTeam @event)

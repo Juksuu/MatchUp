@@ -22,6 +22,7 @@ public abstract class BaseState
     public abstract void OnMapStart();
 
     public abstract HookResult OnPlayerTeam(EventPlayerTeam @event);
+    public abstract HookResult OnMatchEnd(EventCsWinPanelMatch @event);
 
     public virtual HookResult OnChatCommand(int userid, string command, string[]? args = null)
     {
@@ -40,7 +41,8 @@ public static class StateMachine
     private static Dictionary<GameState, BaseState> gameStates = new Dictionary<GameState, BaseState>() {
         { GameState.Loading, new LoadingState() },
         { GameState.Setup, new SetupState() },
-        { GameState.Readyup, new ReadyUpState() }
+        { GameState.Readyup, new ReadyUpState() },
+        { GameState.Live, new LiveState() }
     };
 
     public static void SwitchState(GameState state)

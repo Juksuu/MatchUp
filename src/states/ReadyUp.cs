@@ -29,9 +29,17 @@ public class ReadyUpState : BaseState
     {
         team1Ready = false;
         team2Ready = false;
+
+        team1PlayersReady.Clear();
+        team2PlayersReady.Clear();
     }
 
     public override void OnMapStart() { }
+
+    public override HookResult OnMatchEnd(EventCsWinPanelMatch @event)
+    {
+        return HookResult.Continue;
+    }
 
     public override HookResult OnPlayerTeam(EventPlayerTeam @event)
     {
@@ -53,11 +61,11 @@ public class ReadyUpState : BaseState
             return;
         }
 
-        if (player.TeamNum == 2)
+        if (player.TeamNum == (byte)CsTeam.Terrorist)
         {
             team1PlayersReady.Add(userid);
         }
-        else if (player.TeamNum == 3)
+        else if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
         {
             team2PlayersReady.Add(userid);
         }
@@ -74,6 +82,7 @@ public class ReadyUpState : BaseState
         if (team1Ready && team2Ready)
         {
             Server.PrintToChatAll($" {ChatColors.Green} All players are ready! Starting match!");
+            StateMachine.SwitchState(GameState.Live);
         }
     }
 
