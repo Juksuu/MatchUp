@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 
 namespace MatchUp;
 public class MatchUp : BasePlugin
@@ -11,31 +12,40 @@ public class MatchUp : BasePlugin
     {
         StateMachine.SwitchState(GameState.Loading);
 
-        RegisterEventHandler<EventPlayerChat>((@event, info) =>
+        if (hotReload)
         {
-            if (!@event.Text.StartsWith(".") && !@event.Text.StartsWith("!"))
-            {
-                return HookResult.Continue;
-            }
+            StateMachine.getCurrentState().OnMapStart();
+        }
 
-            CCSPlayerController player = Utilities.GetPlayerFromUserid(@event.Userid);
-            if (!player.IsValid)
-            {
-                return HookResult.Continue;
-            }
+        RegisterListener<Listeners.OnMapStart>(name => StateMachine.getCurrentState().OnMapStart());
+    }
 
-            var result = @event.Text.Split(" ");
-            var command = result[0];
+    [GameEventHandler]
+    public HookResult OnPlayerChat(EventPlayerChat @event, GameEventInfo info)
+    {
+        if (!@event.Text.StartsWith(".") && !@event.Text.StartsWith("!"))
+        {
+            return HookResult.Continue;
+        }
 
-            var state = StateMachine.getCurrentState();
+        CCSPlayerController player = Utilities.GetPlayerFromUserid(@event.Userid);
+        if (!player.IsValid)
+        {
+            return HookResult.Continue;
+        }
 
-            if (result.Length > 1)
-            {
-                var args = result.Skip(1);
-                return state.OnChatCommand(player, command, args.ToArray());
-            }
+        var result = @event.Text.Split(" ");
+        var command = result[0];
 
-            return state.OnChatCommand(player, command);
-        });
+        var state = StateMachine.getCurrentState();
+
+        if (result.Length > 1)
+        {
+            var args = result.Skip(1);
+            Console.WriteLine($"Got command with args: {command}, {string.Join(", ", args.ToArray())}");
+            return state.OnChatCommand(player, command, args.ToArray());
+        }
+
+        return state.OnChatCommand(player, command);
     }
 }

@@ -1,13 +1,13 @@
-using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 
 namespace MatchUp;
 
-public class LoadingState : BaseState
+public class ReadyUpState : BaseState
 {
+
     public override void Enter(GameState oldState)
     {
-        Console.WriteLine("Switched to Loading state");
+        Console.WriteLine("Switched to ReadyUp state");
     }
 
     public override void Leave() { }
@@ -17,15 +17,8 @@ public class LoadingState : BaseState
         return HookResult.Continue;
     }
 
-
     public override void OnMapStart()
     {
-        Console.WriteLine("Executing warmup cfg");
-        Server.ExecuteCommand("exec MatchUp/warmup.cfg");
-
-        Task.Delay(1000).ContinueWith(t =>
-        {
-            StateMachine.SwitchState(GameState.Setup);
-        });
+        throw new NotImplementedException();
     }
 }
