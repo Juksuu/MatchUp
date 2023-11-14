@@ -1,6 +1,7 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MatchUp;
 public class MatchUp : BasePlugin
@@ -37,6 +38,11 @@ public class MatchUp : BasePlugin
         var result = @event.Text.Split(" ");
         var command = result[0].Trim(new Char[] { '!', '.' });
 
+        if (command == "reset")
+        {
+            return OnReset();
+        }
+
         var state = StateMachine.getCurrentState();
 
         if (result.Length > 1)
@@ -62,5 +68,22 @@ public class MatchUp : BasePlugin
     {
         var state = StateMachine.getCurrentState();
         return state.OnMatchEnd(@event);
+    }
+
+    private HookResult OnReset()
+    {
+        Server.PrintToChatAll($" {ChatColors.Green}Resetting!!!");
+
+        Console.WriteLine("Executing warmup cfg");
+        Server.ExecuteCommand("exec MatchUp/warmup.cfg");
+
+        Task.Delay(1000).ContinueWith(t =>
+        {
+            StateMachine.SwitchState(GameState.Loading);
+
+            Server.ExecuteCommand($"changelevel {Server.MapName}");
+        });
+
+        return HookResult.Handled;
     }
 }
