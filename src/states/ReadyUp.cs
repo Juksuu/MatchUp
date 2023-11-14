@@ -34,13 +34,6 @@ public class ReadyUpState : BaseState
         team2PlayersReady.Clear();
     }
 
-    public override void OnMapStart() { }
-
-    public override HookResult OnMatchEnd(EventCsWinPanelMatch @event)
-    {
-        return HookResult.Continue;
-    }
-
     public override HookResult OnPlayerTeam(EventPlayerTeam @event)
     {
         var player = @event.Userid;

@@ -89,14 +89,4 @@ public class SetupState : BaseState
             StateMachine.SwitchState(GameState.Readyup);
         });
     }
-
-    public override HookResult OnPlayerTeam(EventPlayerTeam @event)
-    {
-        return HookResult.Continue;
-    }
-
-    public override HookResult OnMatchEnd(EventCsWinPanelMatch @event)
-    {
-        return HookResult.Continue;
-    }
 }

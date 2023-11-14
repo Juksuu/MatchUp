@@ -19,10 +19,10 @@ public abstract class BaseState
     public abstract void Enter(GameState oldState);
     public abstract void Leave();
 
-    public abstract void OnMapStart();
+    public virtual void OnMapStart() { }
 
-    public abstract HookResult OnPlayerTeam(EventPlayerTeam @event);
-    public abstract HookResult OnMatchEnd(EventCsWinPanelMatch @event);
+    public virtual HookResult OnPlayerTeam(EventPlayerTeam @event) { return HookResult.Continue; }
+    public virtual HookResult OnMatchEnd(EventCsWinPanelMatch @event) { return HookResult.Continue; }
 
     public virtual HookResult OnChatCommand(int userid, string command, string[]? args = null)
     {

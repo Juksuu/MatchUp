@@ -15,6 +15,8 @@ public class LiveState : BaseState
     {
         commandActions["pause"] = (userid, args) => OnPlayerPause(userid);
         commandActions["unpause"] = (userid, args) => OnPlayerUnpause(userid);
+
+        // Used for testing
         commandActions["kill"] = (userid, args) => OnPlayerSuicide(userid);
         commandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
     }
@@ -40,13 +42,6 @@ public class LiveState : BaseState
     {
         team1Pause = false;
         team2Pause = false;
-    }
-
-    public override void OnMapStart() { }
-
-    public override HookResult OnPlayerTeam(EventPlayerTeam @event)
-    {
-        return HookResult.Continue;
     }
 
     private void OnPlayerPause(int userid)
@@ -110,22 +105,6 @@ public class LiveState : BaseState
         }
     }
 
-    private void OnPlayerSuicide(int userid)
-    {
-        var player = Utilities.GetPlayerFromUserid(userid);
-
-        if (player == null || !player.IsValid || !player.PlayerPawn.IsValid)
-            return;
-
-        player.PlayerPawn.Value.CommitSuicide(true, false);
-    }
-
-    private void OnBotCt(int userid)
-    {
-        Server.ExecuteCommand("bot_join_team CT");
-        Server.ExecuteCommand("bot_add_ct");
-    }
-
     public override HookResult OnMatchEnd(EventCsWinPanelMatch @event)
     {
 
@@ -151,5 +130,22 @@ public class LiveState : BaseState
         });
 
         return HookResult.Handled;
+    }
+
+    // Used for testing
+    private void OnPlayerSuicide(int userid)
+    {
+        var player = Utilities.GetPlayerFromUserid(userid);
+    
+        if (player == null || !player.IsValid || !player.PlayerPawn.IsValid)
+            return;
+    
+        player.PlayerPawn.Value.CommitSuicide(true, false);
+    }
+    
+    // Used for testing
+    private void OnBotCt(int userid)
+    {
+        Server.ExecuteCommand("bot_add_ct");
     }
 }
