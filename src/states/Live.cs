@@ -88,13 +88,13 @@ public class LiveState : BaseState
         }
         else if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
         {
-            if (!team1Pause)
+            if (!team2Pause)
             {
                 player.PrintToChat($" {ChatColors.Green} Your team already unpaused!");
             }
             else
             {
-                team1Pause = false;
+                team2Pause = false;
                 Server.PrintToChatAll($" {ChatColors.Green} Counter-Terrorists have unpaused the game!");
             }
         }
@@ -113,7 +113,7 @@ public class LiveState : BaseState
         if (tvEnableCVar != null && tvEnableCVar.GetPrimitiveValue<bool>())
         {
             // TODO: Test which delay should be used here, tv_delay or tv_delay1
-            var tvDelayCvar = ConVar.Find("tv_delay1");
+            var tvDelayCvar = ConVar.Find("tv_delay");
             if (tvDelayCvar != null)
             {
                 delay += tvDelayCvar.GetPrimitiveValue<int>();
@@ -124,9 +124,8 @@ public class LiveState : BaseState
 
         Task.Delay(delay * 1000).ContinueWith(t =>
         {
-            Console.WriteLine("Executing warmup cfg");
-            Server.ExecuteCommand("exec MatchUp/warmup.cfg");
-            StateMachine.SwitchState(GameState.Setup);
+            StateMachine.SwitchState(GameState.Loading);
+            Server.ExecuteCommand($"changelevel {Server.MapName}");
         });
 
         return HookResult.Handled;
