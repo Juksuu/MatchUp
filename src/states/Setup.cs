@@ -20,7 +20,7 @@ public class SetupState : BaseState
 
         commandActions["map"] = (userid, args) => ChatMenus.OpenMenu(Utilities.GetPlayerFromUserid(userid), mapSelection);
         commandActions["team_size"] = (userid, args) => OnTeamSize(userid, args);
-        commandActions["config"] = (userid, option) => MatchConfig.printToPlayer(userid);
+        commandActions["config"] = (userid, option) => MatchConfig.print(userid);
         commandActions["start"] = (userid, option) => OnMatchStart();
         commandActions["help"] = (userid, option) => OnHelp(userid);
     }
@@ -66,6 +66,8 @@ public class SetupState : BaseState
 
     private void OnMatchStart()
     {
+        Server.PrintToChatAll($" {ChatColors.Green}Setting up match with current config");
+        MatchConfig.print();
         if (Server.MapName == MatchConfig.map)
         {
             Server.ExecuteCommand("mp_restartgame 1");
