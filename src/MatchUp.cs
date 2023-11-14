@@ -77,6 +77,13 @@ public class MatchUp : BasePlugin
         return state.OnMatchEnd(@event);
     }
 
+    [GameEventHandler]
+    public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
+    {
+        var state = StateMachine.getCurrentState();
+        return state.OnRoundEnd(@event);
+    }
+
     private HookResult OnReset()
     {
         Server.PrintToChatAll($" {ChatColors.Green}Resetting!!!");

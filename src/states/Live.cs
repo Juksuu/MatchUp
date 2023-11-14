@@ -136,13 +136,13 @@ public class LiveState : BaseState
     private void OnPlayerSuicide(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-    
+
         if (player == null || !player.IsValid || !player.PlayerPawn.IsValid)
             return;
-    
+
         player.PlayerPawn.Value.CommitSuicide(true, false);
     }
-    
+
     // Used for testing
     private void OnBotCt(int userid)
     {

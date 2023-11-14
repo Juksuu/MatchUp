@@ -18,6 +18,10 @@ public class ReadyUpState : BaseState
         commandActions["ready"] = (userid, args) => OnPlayerReady(userid);
         commandActions["ur"] = (userid, args) => OnPlayerUnReady(userid);
         commandActions["unready"] = (userid, args) => OnPlayerUnReady(userid);
+        commandActions["forceready"] = (userid, args) => OnForceReady();
+
+        // Used for testing
+        commandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
     }
 
     public override void Enter(GameState oldState)
@@ -85,7 +89,14 @@ public class ReadyUpState : BaseState
         if (team1Ready && team2Ready)
         {
             Server.PrintToChatAll($" {ChatColors.Green} All players are ready! Starting match!");
-            StateMachine.SwitchState(GameState.Live);
+            if (MatchConfig.knifeRound)
+            {
+                StateMachine.SwitchState(GameState.Knife);
+            }
+            else
+            {
+                StateMachine.SwitchState(GameState.Live);
+            }
         }
     }
 
@@ -108,5 +119,24 @@ public class ReadyUpState : BaseState
 
         Server.PrintToChatAll($@" {ChatColors.Green}Players ready
                 {ChatColors.Darkred}{team1PlayersReady.Count + team2PlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");
+    }
+
+    private void OnForceReady()
+    {
+        Server.PrintToChatAll($" {ChatColors.Green} ForceStart! Starting match!");
+        if (MatchConfig.knifeRound)
+        {
+            StateMachine.SwitchState(GameState.Knife);
+        }
+        else
+        {
+            StateMachine.SwitchState(GameState.Live);
+        }
+    }
+
+    // Used for testing
+    private void OnBotCt(int userid)
+    {
+        Server.ExecuteCommand("bot_add_ct");
     }
 }

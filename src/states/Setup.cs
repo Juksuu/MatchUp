@@ -20,10 +20,12 @@ public class SetupState : BaseState
 
         commandActions["map"] = (userid, args) => ChatMenus.OpenMenu(Utilities.GetPlayerFromUserid(userid), mapSelection);
         commandActions["team_size"] = (userid, args) => OnTeamSize(userid, args);
+        commandActions["knife"] = (userid, args) => OnKnife(userid, args);
         commandActions["config"] = (userid, option) => MatchConfig.print(userid);
         commandActions["start"] = (userid, option) => OnMatchStart();
         commandActions["help"] = (userid, option) => OnHelp(userid);
     }
+
 
     public override void Enter(GameState oldState)
     {
@@ -45,7 +47,8 @@ public class SetupState : BaseState
         player.PrintToChat($" {ChatColors.Green}!map {ChatColors.Default} select map for match");
         player.PrintToChat($" {ChatColors.Green}!start {ChatColors.Default} start match with current config");
         player.PrintToChat($" {ChatColors.Green}!config {ChatColors.Default} print current match config");
-        player.PrintToChat($" {ChatColors.Green}!team_size {ChatColors.Default} set team size for match");
+        player.PrintToChat($" {ChatColors.Green}!team_size <number> {ChatColors.Default} set team size for match");
+        player.PrintToChat($" {ChatColors.Green}!knife <boolean> {ChatColors.Default} set knife round for match");
     }
 
     private void OnTeamSize(int userid, string[]? args)
@@ -62,6 +65,23 @@ public class SetupState : BaseState
         {
             player.PrintToChat("Command usage: !team_size <number>");
         }
+    }
+
+    private void OnKnife(int userid, string[]? args)
+    {
+        var player = Utilities.GetPlayerFromUserid(userid);
+
+        var result = true;
+        if (args != null && Boolean.TryParse(args[0], out result))
+        {
+            player.PrintToChat($"Setting knife round to: {result}");
+            MatchConfig.knifeRound = result;
+        }
+        else
+        {
+            player.PrintToChat("Command usage: !knife <boolean>");
+        }
+
     }
 
     private void OnMatchStart()

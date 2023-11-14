@@ -24,6 +24,7 @@ public abstract class BaseState
     public virtual HookResult OnPlayerTeam(EventPlayerTeam @event) { return HookResult.Continue; }
     public virtual HookResult OnMatchEnd(EventCsWinPanelMatch @event) { return HookResult.Continue; }
     public virtual HookResult OnPlayerConnect(EventPlayerConnectFull @event) { return HookResult.Continue; }
+    public virtual HookResult OnRoundEnd(EventRoundEnd @event) { return HookResult.Continue; }
 
     public virtual HookResult OnChatCommand(int userid, string command, string[]? args = null)
     {
@@ -43,7 +44,8 @@ public static class StateMachine
         { GameState.Loading, new LoadingState() },
         { GameState.Setup, new SetupState() },
         { GameState.Readyup, new ReadyUpState() },
-        { GameState.Live, new LiveState() }
+        { GameState.Live, new LiveState() },
+        { GameState.Knife, new KnifeState() },
     };
 
     public static void SwitchState(GameState state)
