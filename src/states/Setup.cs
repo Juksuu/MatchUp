@@ -68,6 +68,7 @@ public class SetupState : BaseState
     {
         if (Server.MapName == MatchConfig.map)
         {
+            Server.ExecuteCommand("mp_restartgame 1");
             StateMachine.SwitchState(GameState.Readyup);
         }
         else
@@ -85,5 +86,10 @@ public class SetupState : BaseState
         {
             StateMachine.SwitchState(GameState.Readyup);
         });
+    }
+
+    public override HookResult OnPlayerTeam(EventPlayerTeam @event)
+    {
+        return HookResult.Continue;
     }
 }

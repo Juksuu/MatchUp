@@ -21,6 +21,8 @@ public abstract class BaseState
 
     public abstract void OnMapStart();
 
+    public abstract HookResult OnPlayerTeam(EventPlayerTeam @event);
+
     public virtual HookResult OnChatCommand(int userid, string command, string[]? args = null)
     {
         if (commandActions.ContainsKey(command))
@@ -29,6 +31,7 @@ public abstract class BaseState
         }
         return HookResult.Changed;
     }
+
 }
 
 public static class StateMachine

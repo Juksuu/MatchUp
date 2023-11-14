@@ -49,4 +49,11 @@ public class MatchUp : BasePlugin
         Console.WriteLine($"Got command: {command}");
         return state.OnChatCommand(@event.Userid, command!);
     }
+
+    [GameEventHandler]
+    public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
+    {
+        var state = StateMachine.getCurrentState();
+        return state.OnPlayerTeam(@event);
+    }
 }

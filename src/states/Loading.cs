@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 
 namespace MatchUp;
 
@@ -21,5 +22,10 @@ public class LoadingState : BaseState
         {
             StateMachine.SwitchState(GameState.Setup);
         });
+    }
+
+    public override HookResult OnPlayerTeam(EventPlayerTeam @event)
+    {
+        return HookResult.Continue;
     }
 }
