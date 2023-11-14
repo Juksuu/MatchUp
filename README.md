@@ -6,6 +6,7 @@ MatchUp is CS2 plugin for creating and running matches directly from the server
 ## Installation
 * Install Metamod (https://cs2.poggu.me/metamod/installation/)
 * Install MatchUp
+    * Releases page should contain a package that has everything, just move the contents to `cs2/game/csgo` folder
     * Verify the installation by typing `css_plugins list` and you should see MatchUp listed there.
 
 ## Features
