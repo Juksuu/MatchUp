@@ -64,6 +64,13 @@ public class MatchUp : BasePlugin
     }
 
     [GameEventHandler]
+    public HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
+    {
+        var state = StateMachine.getCurrentState();
+        return state.OnPlayerConnect(@event);
+    }
+
+    [GameEventHandler]
     public HookResult OnMatchEnd(EventCsWinPanelMatch @event, GameEventInfo info)
     {
         var state = StateMachine.getCurrentState();

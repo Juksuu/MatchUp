@@ -23,6 +23,8 @@ public class ReadyUpState : BaseState
     public override void Enter(GameState oldState)
     {
         Console.WriteLine("Switched to ReadyUp state");
+
+        Server.PrintToChatAll($" {ChatColors.Green}Please type !ready to ready up!");
     }
 
     public override void Leave()
@@ -42,6 +44,14 @@ public class ReadyUpState : BaseState
         {
             OnPlayerUnReady(player.UserId.Value);
         }
+
+        return HookResult.Continue;
+    }
+
+    public override HookResult OnPlayerConnect(EventPlayerConnectFull @event)
+    {
+        var player = @event.Userid;
+        player.PrintToChat($" {ChatColors.Green}Please type !ready to ready up!");
 
         return HookResult.Continue;
     }

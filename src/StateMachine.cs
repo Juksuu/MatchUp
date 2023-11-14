@@ -23,6 +23,7 @@ public abstract class BaseState
 
     public virtual HookResult OnPlayerTeam(EventPlayerTeam @event) { return HookResult.Continue; }
     public virtual HookResult OnMatchEnd(EventCsWinPanelMatch @event) { return HookResult.Continue; }
+    public virtual HookResult OnPlayerConnect(EventPlayerConnectFull @event) { return HookResult.Continue; }
 
     public virtual HookResult OnChatCommand(int userid, string command, string[]? args = null)
     {
