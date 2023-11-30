@@ -22,7 +22,7 @@ public class SetupState : BaseState
         commandActions["team_size"] = (userid, args) => OnTeamSize(userid, args);
         commandActions["knife"] = (userid, args) => OnKnife(userid, args);
         commandActions["config"] = (userid, option) => MatchConfig.print(userid);
-        commandActions["start"] = (userid, option) => OnMatchStart();
+        commandActions["start"] = (userid, option) => MatchConfig.StartMatch();
         commandActions["help"] = (userid, option) => OnHelp(userid);
     }
 
@@ -36,8 +36,7 @@ public class SetupState : BaseState
 
     private void OnMatchMapChange(CCSPlayerController player, string selection)
     {
-        player.PrintToChat($"Setting map to: {ChatColors.Gold} {selection}");
-        MatchConfig.map = selection;
+        MatchConfig.setMap(selection, player);
     }
 
     private void OnHelp(int userid)
@@ -54,14 +53,7 @@ public class SetupState : BaseState
     private void OnTeamSize(int userid, string[]? args)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-
-        var result = 0;
-        if (args != null && Int32.TryParse(args[0], out result))
-        {
-            player.PrintToChat($"Setting team size to: {result}");
-            MatchConfig.playersPerTeam = result;
-        }
-        else
+        if (args == null || !MatchConfig.setTeamSize(args[0], player))
         {
             player.PrintToChat("Command usage: !team_size <number>");
         }
@@ -70,32 +62,9 @@ public class SetupState : BaseState
     private void OnKnife(int userid, string[]? args)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-
-        var result = true;
-        if (args != null && Boolean.TryParse(args[0], out result))
-        {
-            player.PrintToChat($"Setting knife round to: {result}");
-            MatchConfig.knifeRound = result;
-        }
-        else
+        if (args == null || !MatchConfig.setKnife(args[0], player))
         {
             player.PrintToChat("Command usage: !knife <boolean>");
-        }
-
-    }
-
-    private void OnMatchStart()
-    {
-        Server.PrintToChatAll($" {ChatColors.Green}Setting up match with current config");
-        MatchConfig.print();
-        if (Server.MapName == MatchConfig.map)
-        {
-            Server.ExecuteCommand("mp_restartgame 1");
-            StateMachine.SwitchState(GameState.Readyup);
-        }
-        else
-        {
-            Server.ExecuteCommand($"changelevel {MatchConfig.map}");
         }
     }
 
