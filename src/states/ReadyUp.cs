@@ -70,11 +70,17 @@ public class ReadyUpState : BaseState
 
         if (player.TeamNum == (byte)CsTeam.Terrorist)
         {
-            team1PlayersReady.Add(userid);
+            if (!team1PlayersReady.Contains(userid))
+            {
+                team1PlayersReady.Add(userid);
+            }
         }
         else if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
         {
-            team2PlayersReady.Add(userid);
+            if (!team2PlayersReady.Contains(userid))
+            {
+                team2PlayersReady.Add(userid);
+            }
         }
 
         team1Ready = team1PlayersReady.Count >= MatchConfig.playersPerTeam;
