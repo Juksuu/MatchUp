@@ -1,0 +1,7 @@
+de_ancient
+de_anubis
+de_inferno
+de_mirage
+de_nuke
+de_overpass
+de_vertigo

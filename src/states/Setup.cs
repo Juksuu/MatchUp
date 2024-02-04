@@ -8,17 +8,10 @@ namespace MatchUp;
 public class SetupState : BaseState
 {
 
-    private ChatMenu mapSelection = new ChatMenu("Map Selection");
 
     public SetupState() : base()
     {
-        var mapChangeHandle = (CCSPlayerController player, ChatMenuOption option) => OnMatchMapChange(player, option.Text);
-        foreach (string map in MatchConfig.mapPool)
-        {
-            mapSelection.AddMenuOption(map, mapChangeHandle);
-        }
-
-        commandActions["map"] = (userid, args) => ChatMenus.OpenMenu(Utilities.GetPlayerFromUserid(userid), mapSelection);
+        commandActions["map"] = (userid, args) => OnMapSelection(userid);
         commandActions["team_size"] = (userid, args) => OnTeamSize(userid, args);
         commandActions["knife"] = (userid, args) => OnKnife(userid, args);
         commandActions["config"] = (userid, option) => MatchConfig.print(userid);
@@ -30,13 +23,24 @@ public class SetupState : BaseState
     public override void Enter(GameState oldState)
     {
         Console.WriteLine("Switched to Setup state");
+        MatchConfig.loadMaps();
     }
 
     public override void Leave() { }
 
-    private void OnMatchMapChange(CCSPlayerController player, string selection)
+    private void OnMapSelection(int userid)
     {
-        MatchConfig.setMap(selection, player);
+        Action<CCSPlayerController, ChatMenuOption> mapChangeHandle =
+            (CCSPlayerController player, ChatMenuOption option) => MatchConfig.setMap(option.Text, player);
+
+        var mapSelection = new ChatMenu("Map Selection");
+        foreach (string map in MatchConfig.mapPool)
+        {
+            mapSelection.AddMenuOption(map, mapChangeHandle);
+        }
+
+        var player = Utilities.GetPlayerFromUserid(userid);
+        ChatMenus.OpenMenu(player, mapSelection);
     }
 
     private void OnHelp(int userid)

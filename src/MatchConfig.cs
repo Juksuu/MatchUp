@@ -5,11 +5,27 @@ using CounterStrikeSharp.API.Modules.Utils;
 namespace MatchUp;
 public static class MatchConfig
 {
-    public static string[] mapPool = { "de_ancient", "de_anubis", "de_inferno", "de_mirage", "de_nuke", "de_overpass", "de_vertigo" };
 
     public static int playersPerTeam = 5;
     public static bool knifeRound = true;
     public static string map = "de_mirage";
+    public static string[] mapPool = { };
+
+    public static void loadMaps()
+    {
+        string mapFile = Path.Combine(Server.GameDirectory + "/csgo/cfg/MatchUp", "maps.txt");
+        if (!File.Exists(mapFile))
+        {
+            Console.WriteLine("No maps.txt file, using default map pool");
+            MatchConfig.mapPool = new string[] { "de_ancient", "de_anubis", "de_inferno", "de_mirage", "de_nuke", "de_overpass", "de_vertigo" };
+        }
+        else
+        {
+            Console.WriteLine("Using map pool from maps.txt");
+            var mapsRaw = File.ReadLines(mapFile);
+            MatchConfig.mapPool = mapsRaw.Where(m => Server.IsMapValid(m)).ToArray();
+        }
+    }
 
     public static void print(int? userid = null)
     {
