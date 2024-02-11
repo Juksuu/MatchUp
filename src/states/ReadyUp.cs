@@ -27,8 +27,6 @@ public class ReadyUpState : BaseState
     public override void Enter(GameState oldState)
     {
         Console.WriteLine("Switched to ReadyUp state");
-
-        Server.PrintToChatAll($" {ChatColors.Green}Please type !ready to ready up!");
     }
 
     public override void Leave()
@@ -40,7 +38,7 @@ public class ReadyUpState : BaseState
         team2PlayersReady.Clear();
     }
 
-    public override HookResult OnPlayerTeam(EventPlayerTeam @event)
+    public override void OnPlayerTeam(EventPlayerTeam @event)
     {
         var player = @event.Userid;
 
@@ -48,16 +46,12 @@ public class ReadyUpState : BaseState
         {
             OnPlayerUnReady(player.UserId.Value);
         }
-
-        return HookResult.Continue;
     }
 
-    public override HookResult OnPlayerConnect(EventPlayerConnectFull @event)
+    public override void OnPlayerConnect(EventPlayerConnectFull @event)
     {
         var player = @event.Userid;
         player.PrintToChat($" {ChatColors.Green}Please type !ready to ready up!");
-
-        return HookResult.Continue;
     }
 
     private void OnPlayerReady(int userid)
@@ -89,7 +83,7 @@ public class ReadyUpState : BaseState
         player.PrintToChat($" {ChatColors.Green} You have been marked ready!");
 
         Server.PrintToChatAll($@" {ChatColors.Green}Players ready
-                {ChatColors.Darkred}{team1PlayersReady.Count + team2PlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");
+                {ChatColors.DarkRed}{team1PlayersReady.Count + team2PlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");
 
 
         if (team1Ready && team2Ready)
@@ -124,7 +118,7 @@ public class ReadyUpState : BaseState
         player.PrintToChat($" {ChatColors.Green} You have been marked unready!");
 
         Server.PrintToChatAll($@" {ChatColors.Green}Players ready
-                {ChatColors.Darkred}{team1PlayersReady.Count + team2PlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");
+                {ChatColors.DarkRed}{team1PlayersReady.Count + team2PlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");
     }
 
     private void OnForceReady()

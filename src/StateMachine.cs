@@ -21,18 +21,18 @@ public abstract class BaseState
 
     public virtual void OnMapStart() { }
 
-    public virtual HookResult OnPlayerTeam(EventPlayerTeam @event) { return HookResult.Continue; }
-    public virtual HookResult OnMatchEnd(EventCsWinPanelMatch @event) { return HookResult.Continue; }
-    public virtual HookResult OnPlayerConnect(EventPlayerConnectFull @event) { return HookResult.Continue; }
-    public virtual HookResult OnRoundEnd(EventRoundEnd @event) { return HookResult.Continue; }
+    public virtual void OnPlayerTeam(EventPlayerTeam @event) { }
+    public virtual void OnMatchEnd(EventCsWinPanelMatch @event) { }
+    public virtual void OnPlayerConnect(EventPlayerConnectFull @event) { }
+    public virtual void OnRoundEnd(EventRoundEnd @event) { }
+    public virtual void OnBeginNewMatch(EventBeginNewMatch @event) { }
 
-    public virtual HookResult OnChatCommand(int userid, string command, string[]? args = null)
+    public virtual void OnChatCommand(int userid, string command, string[]? args = null)
     {
         if (commandActions.ContainsKey(command))
         {
             commandActions[command](userid, args);
         }
-        return HookResult.Changed;
     }
 
 }

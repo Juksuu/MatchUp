@@ -11,6 +11,10 @@ public class LiveState : BaseState
     private bool team1Pause = false;
     private bool team2Pause = false;
 
+    private int restartsRequired = 1;
+    private int restartsRemaining = 1;
+    private bool waitForRestarts = false;
+
     public LiveState() : base()
     {
         commandActions["pause"] = (userid, args) => OnPlayerPause(userid);
@@ -28,14 +32,13 @@ public class LiveState : BaseState
         Console.WriteLine("Executing Live cfg");
         Server.ExecuteCommand("exec MatchUp/live.cfg");
 
+        // Wait for restarts
+        // Number of restarts is restartsRequired + 1 since ending warmup counts as restart
+        waitForRestarts = true;
+        restartsRemaining = restartsRequired + 1;
+
         Server.ExecuteCommand("mp_restartgame 3");
 
-        Task.Delay(4000).ContinueWith(t =>
-        {
-            Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
-            Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
-            Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
-        });
     }
 
     public override void Leave()
@@ -105,7 +108,7 @@ public class LiveState : BaseState
         }
     }
 
-    public override HookResult OnMatchEnd(EventCsWinPanelMatch @event)
+    public override void OnMatchEnd(EventCsWinPanelMatch @event)
     {
 
         var delay = 15;
@@ -127,8 +130,23 @@ public class LiveState : BaseState
             StateMachine.SwitchState(GameState.Loading);
             Server.ExecuteCommand($"changelevel {Server.MapName}");
         });
+    }
 
-        return HookResult.Handled;
+    public override void OnBeginNewMatch(EventBeginNewMatch @event)
+    {
+        if (waitForRestarts)
+        {
+            restartsRemaining--;
+
+            if (restartsRemaining == 0)
+            {
+                Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
+                Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
+                Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
+
+                waitForRestarts = false;
+            }
+        }
     }
 
     // Used for testing
@@ -136,7 +154,7 @@ public class LiveState : BaseState
     {
         var player = Utilities.GetPlayerFromUserid(userid);
 
-        if (player == null || !player.IsValid || !player.PlayerPawn.IsValid)
+        if (player == null || !player.IsValid || player.PlayerPawn.Value == null || !player.PlayerPawn.IsValid)
             return;
 
         player.PlayerPawn.Value.CommitSuicide(true, false);

@@ -10,6 +10,10 @@ public class KnifeState : BaseState
     private CsTeam winningTeam;
     private bool knifeEnded = false;
 
+    private int restartsRequired = 1;
+    private int restartsRemaining = 1;
+    private bool waitForRestarts = false;
+
     public KnifeState() : base()
     {
         commandActions["stay"] = (userid, args) => OnStay(userid);
@@ -27,14 +31,12 @@ public class KnifeState : BaseState
         Console.WriteLine("Executing Live cfg");
         Server.ExecuteCommand("exec MatchUp/knife.cfg");
 
-        Server.ExecuteCommand("mp_restartgame 3");
+        // Wait for restarts
+        // Number of restarts is restartsRequired + 1 since ending warmup counts as restart
+        waitForRestarts = true;
+        restartsRemaining = restartsRequired + 1;
 
-        Task.Delay(4000).ContinueWith(t =>
-        {
-            Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
-            Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
-            Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
-        });
+        Server.ExecuteCommand("mp_restartgame 3");
     }
 
     public override void Leave()
@@ -42,7 +44,7 @@ public class KnifeState : BaseState
         knifeEnded = false;
     }
 
-    public override HookResult OnRoundEnd(EventRoundEnd @event)
+    public override void OnRoundEnd(EventRoundEnd @event)
     {
         Console.WriteLine("Executing warmup cfg");
         Server.ExecuteCommand("exec MatchUp/warmup.cfg");
@@ -60,8 +62,23 @@ public class KnifeState : BaseState
 
         Server.PrintToChatAll($" {ChatColors.Green}Please select side with !stay/!switch");
         knifeEnded = true;
+    }
 
-        return HookResult.Changed;
+    public override void OnBeginNewMatch(EventBeginNewMatch @event)
+    {
+        if (waitForRestarts)
+        {
+            restartsRemaining--;
+
+            if (restartsRemaining == 0)
+            {
+                Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
+                Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
+                Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
+
+                waitForRestarts = false;
+            }
+        }
     }
 
     private void OnSwitch(int userid)
@@ -83,12 +100,13 @@ public class KnifeState : BaseState
         }
     }
 
+
     // Used for testing
     private void OnPlayerSuicide(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
 
-        if (player == null || !player.IsValid || !player.PlayerPawn.IsValid)
+        if (player == null || !player.IsValid || player.PlayerPawn.Value == null || !player.PlayerPawn.IsValid)
             return;
 
         player.PlayerPawn.Value.CommitSuicide(true, false);

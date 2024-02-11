@@ -13,6 +13,8 @@ public class LoadingState : BaseState
 
     public override void OnMapStart()
     {
+        MatchConfig.loadMaps();
+
         Console.WriteLine("Executing warmup cfg");
         Server.ExecuteCommand("exec MatchUp/warmup.cfg");
 

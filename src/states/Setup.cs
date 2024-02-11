@@ -7,8 +7,6 @@ namespace MatchUp;
 
 public class SetupState : BaseState
 {
-
-
     public SetupState() : base()
     {
         commandActions["map"] = (userid, args) => OnMapSelection(userid);
@@ -23,7 +21,6 @@ public class SetupState : BaseState
     public override void Enter(GameState oldState)
     {
         Console.WriteLine("Switched to Setup state");
-        MatchConfig.loadMaps();
     }
 
     public override void Leave() { }
@@ -34,13 +31,14 @@ public class SetupState : BaseState
             (CCSPlayerController player, ChatMenuOption option) => MatchConfig.setMap(option.Text, player);
 
         var mapSelection = new ChatMenu("Map Selection");
+
         foreach (string map in MatchConfig.mapPool)
         {
             mapSelection.AddMenuOption(map, mapChangeHandle);
         }
 
         var player = Utilities.GetPlayerFromUserid(userid);
-        ChatMenus.OpenMenu(player, mapSelection);
+        MenuManager.OpenChatMenu(player, mapSelection);
     }
 
     private void OnHelp(int userid)
@@ -77,7 +75,7 @@ public class SetupState : BaseState
         Console.WriteLine("Executing warmup cfg");
         Server.ExecuteCommand("exec MatchUp/warmup.cfg");
 
-        Task.Delay(1000).ContinueWith(t =>
+        Task.Delay(1000).ContinueWith(t => 
         {
             StateMachine.SwitchState(GameState.Readyup);
         });

@@ -82,7 +82,8 @@ public class MatchUp : BasePlugin
 
         if (command == "reset")
         {
-            return OnReset();
+            OnReset();
+            return HookResult.Continue;
         }
 
         var state = StateMachine.getCurrentState();
@@ -91,42 +92,63 @@ public class MatchUp : BasePlugin
         {
             var args = result.Skip(1).ToArray();
             Console.WriteLine($"Got command with args: {command}, {string.Join(", ", args)}");
-            return state.OnChatCommand(@event.Userid, command!, args);
+            state.OnChatCommand(@event.Userid, command!, args);
+
+            return HookResult.Continue;
         }
 
         Console.WriteLine($"Got command: {command}");
-        return state.OnChatCommand(@event.Userid, command!);
+        state.OnChatCommand(@event.Userid, command!);
+
+        return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
         var state = StateMachine.getCurrentState();
-        return state.OnPlayerTeam(@event);
+        state.OnPlayerTeam(@event);
+
+        return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
     {
         var state = StateMachine.getCurrentState();
-        return state.OnPlayerConnect(@event);
+        state.OnPlayerConnect(@event);
+
+        return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnMatchEnd(EventCsWinPanelMatch @event, GameEventInfo info)
     {
         var state = StateMachine.getCurrentState();
-        return state.OnMatchEnd(@event);
+        state.OnMatchEnd(@event);
+
+        return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
     {
         var state = StateMachine.getCurrentState();
-        return state.OnRoundEnd(@event);
+        state.OnRoundEnd(@event);
+
+        return HookResult.Continue;
     }
 
-    private HookResult OnReset()
+    [GameEventHandler]
+    public HookResult OnBeginNewMatch(EventBeginNewMatch @event, GameEventInfo info)
+    {
+        var state = StateMachine.getCurrentState();
+        state.OnBeginNewMatch(@event);
+
+        return HookResult.Continue;
+    }
+
+    private void OnReset()
     {
         Server.PrintToChatAll($" {ChatColors.Green}Resetting!!!");
 
@@ -136,10 +158,7 @@ public class MatchUp : BasePlugin
         Task.Delay(1000).ContinueWith(t =>
         {
             StateMachine.SwitchState(GameState.Loading);
-
             Server.ExecuteCommand($"changelevel {Server.MapName}");
         });
-
-        return HookResult.Handled;
     }
 }
