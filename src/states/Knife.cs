@@ -10,10 +10,6 @@ public class KnifeState : BaseState
     private CsTeam winningTeam;
     private bool knifeEnded = false;
 
-    private int restartsRequired = 1;
-    private int restartsRemaining = 1;
-    private bool waitForRestarts = false;
-
     public KnifeState() : base()
     {
         commandActions["stay"] = (userid, args) => OnStay(userid);
@@ -31,12 +27,14 @@ public class KnifeState : BaseState
         Console.WriteLine("Executing Live cfg");
         Server.ExecuteCommand("exec MatchUp/knife.cfg");
 
-        // Wait for restarts
-        // Number of restarts is restartsRequired + 1 since ending warmup counts as restart
-        waitForRestarts = true;
-        restartsRemaining = restartsRequired + 1;
-
         Server.ExecuteCommand("mp_restartgame 3");
+
+        Utils.DelayedCall(TimeSpan.FromSeconds(4), () =>
+        {
+            Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
+            Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
+            Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
+        });
     }
 
     public override void Leave()
@@ -62,23 +60,6 @@ public class KnifeState : BaseState
 
         Server.PrintToChatAll($" {ChatColors.Green}Please select side with !stay/!switch");
         knifeEnded = true;
-    }
-
-    public override void OnBeginNewMatch(EventBeginNewMatch @event)
-    {
-        if (waitForRestarts)
-        {
-            restartsRemaining--;
-
-            if (restartsRemaining == 0)
-            {
-                Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
-                Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
-                Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
-
-                waitForRestarts = false;
-            }
-        }
     }
 
     private void OnSwitch(int userid)

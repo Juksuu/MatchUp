@@ -27,6 +27,9 @@ public class ReadyUpState : BaseState
     public override void Enter(GameState oldState)
     {
         Console.WriteLine("Switched to ReadyUp state");
+
+        Console.WriteLine("Executing warmup cfg");
+        Server.ExecuteCommand("exec MatchUp/warmup.cfg");
     }
 
     public override void Leave()

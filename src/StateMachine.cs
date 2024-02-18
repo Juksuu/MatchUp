@@ -22,10 +22,9 @@ public abstract class BaseState
     public virtual void OnMapStart() { }
 
     public virtual void OnPlayerTeam(EventPlayerTeam @event) { }
-    public virtual void OnMatchEnd(EventCsWinPanelMatch @event) { }
     public virtual void OnPlayerConnect(EventPlayerConnectFull @event) { }
+    public virtual void OnMatchEnd(EventCsWinPanelMatch @event) { }
     public virtual void OnRoundEnd(EventRoundEnd @event) { }
-    public virtual void OnBeginNewMatch(EventBeginNewMatch @event) { }
 
     public virtual void OnChatCommand(int userid, string command, string[]? args = null)
     {

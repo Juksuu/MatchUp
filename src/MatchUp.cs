@@ -12,6 +12,7 @@ public class MatchUp : BasePlugin
 
     public override void Load(bool hotReload)
     {
+        base.Load(hotReload);
         StateMachine.SwitchState(GameState.Loading);
 
         if (hotReload)
@@ -106,45 +107,28 @@ public class MatchUp : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
-        var state = StateMachine.getCurrentState();
-        state.OnPlayerTeam(@event);
-
+        StateMachine.getCurrentState().OnPlayerTeam(@event);
         return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
     {
-        var state = StateMachine.getCurrentState();
-        state.OnPlayerConnect(@event);
-
+        StateMachine.getCurrentState().OnPlayerConnect(@event);
         return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnMatchEnd(EventCsWinPanelMatch @event, GameEventInfo info)
     {
-        var state = StateMachine.getCurrentState();
-        state.OnMatchEnd(@event);
-
+        StateMachine.getCurrentState().OnMatchEnd(@event);
         return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
     {
-        var state = StateMachine.getCurrentState();
-        state.OnRoundEnd(@event);
-
-        return HookResult.Continue;
-    }
-
-    [GameEventHandler]
-    public HookResult OnBeginNewMatch(EventBeginNewMatch @event, GameEventInfo info)
-    {
-        var state = StateMachine.getCurrentState();
-        state.OnBeginNewMatch(@event);
-
+        StateMachine.getCurrentState().OnRoundEnd(@event);
         return HookResult.Continue;
     }
 
@@ -152,10 +136,7 @@ public class MatchUp : BasePlugin
     {
         Server.PrintToChatAll($" {ChatColors.Green}Resetting!!!");
 
-        Console.WriteLine("Executing warmup cfg");
-        Server.ExecuteCommand("exec MatchUp/warmup.cfg");
-
-        Task.Delay(1000).ContinueWith(t =>
+        Utils.DelayedCall(TimeSpan.FromSeconds(1), () =>
         {
             StateMachine.SwitchState(GameState.Loading);
             Server.ExecuteCommand($"changelevel {Server.MapName}");

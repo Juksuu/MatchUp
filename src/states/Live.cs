@@ -11,10 +11,6 @@ public class LiveState : BaseState
     private bool team1Pause = false;
     private bool team2Pause = false;
 
-    private int restartsRequired = 1;
-    private int restartsRemaining = 1;
-    private bool waitForRestarts = false;
-
     public LiveState() : base()
     {
         commandActions["pause"] = (userid, args) => OnPlayerPause(userid);
@@ -32,13 +28,14 @@ public class LiveState : BaseState
         Console.WriteLine("Executing Live cfg");
         Server.ExecuteCommand("exec MatchUp/live.cfg");
 
-        // Wait for restarts
-        // Number of restarts is restartsRequired + 1 since ending warmup counts as restart
-        waitForRestarts = true;
-        restartsRemaining = restartsRequired + 1;
-
         Server.ExecuteCommand("mp_restartgame 3");
 
+        Utils.DelayedCall(TimeSpan.FromSeconds(4), () =>
+        {
+            Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
+            Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
+            Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
+        });
     }
 
     public override void Leave()
@@ -125,28 +122,11 @@ public class LiveState : BaseState
 
         Console.WriteLine($"Waiting for match end panel and cstv delay {delay}");
 
-        Task.Delay(delay * 1000).ContinueWith(t =>
+        Utils.DelayedCall(TimeSpan.FromSeconds(delay), () =>
         {
             StateMachine.SwitchState(GameState.Loading);
             Server.ExecuteCommand($"changelevel {Server.MapName}");
         });
-    }
-
-    public override void OnBeginNewMatch(EventBeginNewMatch @event)
-    {
-        if (waitForRestarts)
-        {
-            restartsRemaining--;
-
-            if (restartsRemaining == 0)
-            {
-                Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
-                Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
-                Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
-
-                waitForRestarts = false;
-            }
-        }
     }
 
     // Used for testing

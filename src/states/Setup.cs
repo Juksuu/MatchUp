@@ -21,6 +21,9 @@ public class SetupState : BaseState
     public override void Enter(GameState oldState)
     {
         Console.WriteLine("Switched to Setup state");
+
+        Console.WriteLine("Executing warmup cfg");
+        Server.ExecuteCommand("exec MatchUp/warmup.cfg");
     }
 
     public override void Leave() { }
@@ -72,10 +75,7 @@ public class SetupState : BaseState
 
     public override void OnMapStart()
     {
-        Console.WriteLine("Executing warmup cfg");
-        Server.ExecuteCommand("exec MatchUp/warmup.cfg");
-
-        Task.Delay(1000).ContinueWith(t => 
+        Utils.DelayedCall(TimeSpan.FromSeconds(1), () =>
         {
             StateMachine.SwitchState(GameState.Readyup);
         });
