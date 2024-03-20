@@ -49,6 +49,7 @@ For testing only
 
 - `!pause` Pause match
 - `!unpause` Unpause match
+- `!backup` Can be used in pause state to backup rounds
 
 For testing only
 - `!kill` Kill self in game
