@@ -43,6 +43,8 @@ public class LiveState : BaseState
             Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
             Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
             Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
+
+            CSTVManager.startDemoRecording();
         });
     }
 
@@ -56,23 +58,15 @@ public class LiveState : BaseState
 
     public override void OnMatchEnd(EventCsWinPanelMatch @event)
     {
-
         var delay = 15;
-        var tvEnableCVar = ConVar.Find("tv_enable");
-        if (tvEnableCVar != null && tvEnableCVar.GetPrimitiveValue<bool>())
-        {
-            // TODO: Test which delay should be used here, tv_delay or tv_delay1
-            var tvDelayCvar = ConVar.Find("tv_delay");
-            if (tvDelayCvar != null)
-            {
-                delay += tvDelayCvar.GetPrimitiveValue<int>();
-            }
-        }
+        delay += CSTVManager.getTvDelay();
 
         Console.WriteLine($"Waiting for match end panel and cstv delay {delay}");
 
         Utils.DelayedCall(TimeSpan.FromSeconds(delay), () =>
         {
+            CSTVManager.stopDemoRecording();
+
             StateMachine.SwitchState(GameState.Loading);
             Server.ExecuteCommand($"changelevel {Server.MapName}");
         });
