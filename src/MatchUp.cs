@@ -8,7 +8,7 @@ namespace MatchUp;
 public class MatchUp : BasePlugin
 {
     public override string ModuleName => "MatchUp";
-    public override string ModuleVersion => "0.5.0";
+    public override string ModuleVersion => "0.5.1";
 
     public override void Load(bool hotReload)
     {
@@ -72,8 +72,8 @@ public class MatchUp : BasePlugin
             return HookResult.Continue;
         }
 
-        CCSPlayerController player = Utilities.GetPlayerFromUserid(@event.Userid);
-        if (!player.IsValid)
+        var player = Utilities.GetPlayerFromUserid(@event.Userid);
+        if (player == null || !player.IsValid)
         {
             return HookResult.Continue;
         }

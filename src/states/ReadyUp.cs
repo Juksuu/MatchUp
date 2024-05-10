@@ -45,7 +45,7 @@ public class ReadyUpState : BaseState
     {
         var player = @event.Userid;
 
-        if (!@event.Isbot && player.UserId.HasValue)
+        if (!@event.Isbot && player != null && player.UserId.HasValue)
         {
             OnPlayerUnReady(player.UserId.Value);
         }
@@ -54,13 +54,16 @@ public class ReadyUpState : BaseState
     public override void OnPlayerConnect(EventPlayerConnectFull @event)
     {
         var player = @event.Userid;
-        player.PrintToChat($" {ChatColors.Green}Please type !ready to ready up!");
+        if (player != null)
+        {
+            player.PrintToChat($" {ChatColors.Green}Please type !ready to ready up!");
+        }
     }
 
     private void OnPlayerReady(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (!player.IsValid || !player.Pawn.IsValid)
+        if (player == null || !player.IsValid || !player.Pawn.IsValid)
         {
             return;
         }
@@ -118,7 +121,10 @@ public class ReadyUpState : BaseState
         }
 
         var player = Utilities.GetPlayerFromUserid(userid);
-        player.PrintToChat($" {ChatColors.Green} You have been marked unready!");
+        if (player != null)
+        {
+            player.PrintToChat($" {ChatColors.Green} You have been marked unready!");
+        }
 
         Server.PrintToChatAll($@" {ChatColors.Green}Players ready
                 {ChatColors.DarkRed}{team1PlayersReady.Count + team2PlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");

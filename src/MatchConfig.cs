@@ -32,10 +32,14 @@ public static class MatchConfig
         if (userid.HasValue)
         {
             var player = Utilities.GetPlayerFromUserid(userid.Value);
-            player.PrintToChat($" {ChatColors.Green} Current config");
-            player.PrintToChat($" {ChatColors.Grey} Map: {ChatColors.Gold} {map}");
-            player.PrintToChat($" {ChatColors.Grey} Players per team: {ChatColors.Gold} {playersPerTeam}");
-            player.PrintToChat($" {ChatColors.Grey} Knife round enabled: {ChatColors.Gold} {knifeRound}");
+            if (player != null)
+            {
+                player.PrintToChat($" {ChatColors.Green} Current config");
+                player.PrintToChat($" {ChatColors.Grey} Map: {ChatColors.Gold} {map}");
+                player.PrintToChat($" {ChatColors.Grey} Players per team: {ChatColors.Gold} {playersPerTeam}");
+                player.PrintToChat($" {ChatColors.Grey} Knife round enabled: {ChatColors.Gold} {knifeRound}");
+
+            }
         }
         else
         {

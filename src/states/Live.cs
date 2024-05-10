@@ -75,6 +75,11 @@ public class LiveState : BaseState
     private void OnPlayerPause(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
+        if (player == null)
+        {
+            return;
+        }
+
         var paused = team1Pause || team2Pause;
 
         if (paused)
@@ -101,6 +106,10 @@ public class LiveState : BaseState
     private void OnPlayerUnpause(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
+        if (player == null)
+        {
+            return;
+        }
 
         if (player.TeamNum == (byte)CsTeam.Terrorist)
         {
@@ -137,6 +146,10 @@ public class LiveState : BaseState
     private void OnPlayerBackup(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
+        if (player == null)
+        {
+            return;
+        }
 
         var paused = team1Pause || team2Pause;
         if (paused)

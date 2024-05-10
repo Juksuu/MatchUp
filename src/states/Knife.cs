@@ -65,7 +65,7 @@ public class KnifeState : BaseState
     private void OnSwitch(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (knifeEnded && player.TeamNum == (byte)winningTeam)
+        if (knifeEnded && player != null && player.TeamNum == (byte)winningTeam)
         {
             Server.ExecuteCommand("mp_swapteams");
             StateMachine.SwitchState(GameState.Live);
@@ -75,7 +75,7 @@ public class KnifeState : BaseState
     private void OnStay(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (knifeEnded && player.TeamNum == (byte)winningTeam)
+        if (knifeEnded && player != null && player.TeamNum == (byte)winningTeam)
         {
             StateMachine.SwitchState(GameState.Live);
         }
