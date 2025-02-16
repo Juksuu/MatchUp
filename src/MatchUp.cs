@@ -8,7 +8,7 @@ namespace MatchUp;
 public class MatchUp : BasePlugin
 {
     public override string ModuleName => "MatchUp";
-    public override string ModuleVersion => "0.5.4";
+    public override string ModuleVersion => "0.5.5";
 
     public override void Load(bool hotReload)
     {
