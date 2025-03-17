@@ -11,19 +11,32 @@ public static class MatchConfig
     public static string map = "de_mirage";
     public static string[] mapPool = { };
 
+    private static string[] defaultMapPool = { "de_ancient", "de_anubis", "de_dust2", "de_inferno", "de_mirage", "de_nuke", "de_train" };
+
     public static void loadMaps()
     {
-        string mapFile = Path.Combine(Server.GameDirectory + "/csgo/cfg/MatchUp", "maps.txt");
-        if (!File.Exists(mapFile))
+        // Check environment variable first for maps, then local file and lastly use
+        // default map options specified in this class
+        string? envMaps = Environment.GetEnvironmentVariable("MATCHUP_MAPS");
+        if (envMaps != null)
         {
-            Console.WriteLine("No maps.txt file, using default map pool");
-            MatchConfig.mapPool = new string[] { "de_ancient", "de_anubis", "de_inferno", "de_mirage", "de_nuke", "de_overpass", "de_vertigo" };
+            Console.WriteLine("Using map pool from MATCHUP_MAPS env variable");
+            MatchConfig.mapPool = envMaps.Split(",").Where(m => Server.IsMapValid(m)).ToArray();
         }
         else
         {
-            Console.WriteLine("Using map pool from maps.txt");
-            var mapsRaw = File.ReadLines(mapFile);
-            MatchConfig.mapPool = mapsRaw.Where(m => Server.IsMapValid(m)).ToArray();
+            string mapFile = Path.Combine(Server.GameDirectory + "/csgo/cfg/MatchUp", "maps.txt");
+            if (File.Exists(mapFile))
+            {
+                Console.WriteLine("Using map pool from maps.txt");
+                var mapsRaw = File.ReadLines(mapFile);
+                MatchConfig.mapPool = mapsRaw.Where(m => Server.IsMapValid(m)).ToArray();
+            }
+            else
+            {
+                Console.WriteLine("Using default map pool");
+                MatchConfig.mapPool = MatchConfig.defaultMapPool;
+            }
         }
     }
 
