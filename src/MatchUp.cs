@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.Events;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MatchUp;
+
 public class MatchUp : BasePlugin
 {
     public override string ModuleName => "MatchUp";

@@ -3,15 +3,16 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MatchUp;
+
 public static class MatchConfig
 {
-
     public static int playersPerTeam = 5;
     public static bool knifeRound = true;
     public static string map = "de_mirage";
     public static string[] mapPool = { };
 
-    private static string[] defaultMapPool = { "de_ancient", "de_anubis", "de_dust2", "de_inferno", "de_mirage", "de_nuke", "de_train" };
+    private static string[] defaultMapPool =
+        { "de_ancient", "de_anubis", "de_dust2", "de_inferno", "de_mirage", "de_nuke", "de_train" };
 
     public static void loadMaps()
     {
@@ -51,7 +52,6 @@ public static class MatchConfig
                 player.PrintToChat($" {ChatColors.Grey} Map: {ChatColors.Gold} {map}");
                 player.PrintToChat($" {ChatColors.Grey} Players per team: {ChatColors.Gold} {playersPerTeam}");
                 player.PrintToChat($" {ChatColors.Grey} Knife round enabled: {ChatColors.Gold} {knifeRound}");
-
             }
         }
         else
@@ -72,6 +72,7 @@ public static class MatchConfig
             {
                 player.PrintToChat($"Setting map to: {map}");
             }
+
             MatchConfig.map = map;
 
             return true;
@@ -90,10 +91,12 @@ public static class MatchConfig
             {
                 player.PrintToChat($"Setting team size to: {teamSize}");
             }
+
             MatchConfig.playersPerTeam = result;
 
             return true;
         }
+
         return false;
     }
 
@@ -107,6 +110,7 @@ public static class MatchConfig
             {
                 player.PrintToChat($"Setting knife round to: {result}");
             }
+
             MatchConfig.knifeRound = result;
 
             return true;
@@ -128,6 +132,5 @@ public static class MatchConfig
         {
             Server.ExecuteCommand($"changelevel {MatchConfig.map}");
         }
-
     }
 }
