@@ -3,15 +3,17 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MatchUp;
+
 public static class MatchConfig
 {
-
     public static int playersPerTeam = 5;
     public static bool knifeRound = true;
     public static string map = "de_mirage";
     public static string[] mapPool = { };
+    public static Dictionary<string, string> settings = new Dictionary<string, string>();
 
-    private static string[] defaultMapPool = { "de_ancient", "de_anubis", "de_dust2", "de_inferno", "de_mirage", "de_nuke", "de_train" };
+    private static string[] defaultMapPool =
+        { "de_ancient", "de_anubis", "de_dust2", "de_inferno", "de_mirage", "de_nuke", "de_train" };
 
     public static void loadMaps()
     {
@@ -40,6 +42,47 @@ public static class MatchConfig
         }
     }
 
+    public static void loadSettings()
+    {
+        // reset settings
+        settings.Clear();
+        // start loading settings
+        var settingsFile = Path.Combine(Server.GameDirectory + "/csgo/cfg/MatchUp", "settings.txt");
+        if (!File.Exists(settingsFile))
+        {
+            Console.WriteLine("Using default settings.");
+            return;
+        }
+
+        Console.WriteLine("Using settings from settings.txt");
+        var lines = File.ReadLines(settingsFile);
+        foreach (var line in lines)
+        {
+            // Make sure the line is not empty and not commented out.
+            if (string.IsNullOrEmpty(line)) continue;
+            var trimmedLine = line.TrimStart();
+            if (trimmedLine.StartsWith(';')) continue;
+            // Split the line in a maximum of 2 parts, making sure that values including equal signs are left intact.
+            // Empty values or values only containing whitespace are ignored.
+            var parts = trimmedLine.Split('=', 2,
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (parts.Length == 2)
+            {
+                var key = parts[0].Trim();
+                var value = parts[1].Trim();
+                settings[key] = value;
+                Console.WriteLine($"Loaded setting: {key} -> {value}");
+            }
+            else
+            {
+                // there was no equal sign in the line, or the value was empty or only contained whitespaces.
+                Console.WriteLine($"Malformed setting (missing = or value): {trimmedLine}");
+            }
+        }
+
+        Console.WriteLine($"Loaded {settings.Count} settings from settings.txt");
+    }
+
     public static void print(int? userid = null)
     {
         if (userid.HasValue)
@@ -51,7 +94,6 @@ public static class MatchConfig
                 player.PrintToChat($" {ChatColors.Grey} Map: {ChatColors.Gold} {map}");
                 player.PrintToChat($" {ChatColors.Grey} Players per team: {ChatColors.Gold} {playersPerTeam}");
                 player.PrintToChat($" {ChatColors.Grey} Knife round enabled: {ChatColors.Gold} {knifeRound}");
-
             }
         }
         else
@@ -72,6 +114,7 @@ public static class MatchConfig
             {
                 player.PrintToChat($"Setting map to: {map}");
             }
+
             MatchConfig.map = map;
 
             return true;
@@ -90,10 +133,12 @@ public static class MatchConfig
             {
                 player.PrintToChat($"Setting team size to: {teamSize}");
             }
+
             MatchConfig.playersPerTeam = result;
 
             return true;
         }
+
         return false;
     }
 
@@ -107,6 +152,7 @@ public static class MatchConfig
             {
                 player.PrintToChat($"Setting knife round to: {result}");
             }
+
             MatchConfig.knifeRound = result;
 
             return true;
@@ -128,6 +174,5 @@ public static class MatchConfig
         {
             Server.ExecuteCommand($"changelevel {MatchConfig.map}");
         }
-
     }
 }
