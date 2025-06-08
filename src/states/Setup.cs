@@ -12,7 +12,7 @@ public class SetupState : BaseState
         CommandActions["map"] = (userid, _) => OnMapSelection(userid);
         CommandActions["team_size"] = OnTeamSize;
         CommandActions["knife"] = OnKnife;
-        CommandActions["config"] = (userid, _) => MatchConfig.print(userid);
+        CommandActions["config"] = (userid, _) => MatchConfig.Print(userid);
         CommandActions["start"] = (_, _) => MatchConfig.StartMatch();
         CommandActions["help"] = (userid, _) => OnHelp(userid);
     }
@@ -42,11 +42,11 @@ public class SetupState : BaseState
         }
 
         Action<CCSPlayerController, ChatMenuOption> mapChangeHandle =
-            (actionPlayer, option) => MatchConfig.setMap(option.Text, actionPlayer);
+            (actionPlayer, option) => MatchConfig.SetMap(option.Text, actionPlayer);
 
         var mapSelection = new ChatMenu("Map Selection");
 
-        foreach (var map in MatchConfig.mapPool)
+        foreach (var map in MatchConfig.MapPool)
         {
             mapSelection.AddMenuOption(map, mapChangeHandle);
         }
@@ -73,7 +73,7 @@ public class SetupState : BaseState
     private static void OnTeamSize(int userid, string[]? args)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (player != null && (args == null || !MatchConfig.setTeamSize(args[0], player)))
+        if (player != null && (args == null || !MatchConfig.SetTeamSize(args[0], player)))
         {
             player.PrintToChat(" Command usage: !team_size <number>");
         }
@@ -82,7 +82,7 @@ public class SetupState : BaseState
     private static void OnKnife(int userid, string[]? args)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (player != null && (args == null || !MatchConfig.setKnife(args[0], player)))
+        if (player != null && (args == null || !MatchConfig.SetKnife(args[0], player)))
         {
             player.PrintToChat(" Command usage: !knife <boolean>");
         }

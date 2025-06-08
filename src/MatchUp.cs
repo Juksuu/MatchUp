@@ -44,19 +44,19 @@ public class MatchUp : BasePlugin
     public void OnMapSet(CCSPlayerController? player, CommandInfo command)
     {
         Console.WriteLine($"setting map with args: {command.GetCommandString}");
-        MatchConfig.setMap(command.GetArg(1));
+        MatchConfig.SetMap(command.GetArg(1));
     }
 
     [ConsoleCommand("matchup_team_size", "Set match team size")]
     public void OnTeamSizeSet(CCSPlayerController? player, CommandInfo command)
     {
-        MatchConfig.setTeamSize(command.GetArg(1));
+        MatchConfig.SetTeamSize(command.GetArg(1));
     }
 
     [ConsoleCommand("matchup_knife", "Set match knife round status")]
     public void OnKnifeSet(CCSPlayerController? player, CommandInfo command)
     {
-        MatchConfig.setKnife(command.GetArg(1));
+        MatchConfig.SetKnife(command.GetArg(1));
     }
 
     [ConsoleCommand("matchup_start", "Start match with current config")]
@@ -75,8 +75,8 @@ public class MatchUp : BasePlugin
             return;
         }
 
-        MatchConfig.loadMaps();
-        MatchConfig.loadSettings();
+        MatchConfig.LoadMaps();
+        MatchConfig.LoadSettings();
     }
 
     // Events

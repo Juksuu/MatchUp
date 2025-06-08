@@ -77,13 +77,13 @@ public class ReadyUpState : BaseState
                 break;
         }
 
-        _tReady = _tPlayersReady.Count >= MatchConfig.playersPerTeam;
-        _ctReady = _ctPlayersReady.Count >= MatchConfig.playersPerTeam;
+        _tReady = _tPlayersReady.Count >= MatchConfig.PlayersPerTeam;
+        _ctReady = _ctPlayersReady.Count >= MatchConfig.PlayersPerTeam;
 
         player.PrintToChat($" {ChatColors.Green} You have been marked ready!");
 
         Server.PrintToChatAll(
-            $" {ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");
+            $" {ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.PlayersPerTeam * 2}");
 
         if (!_tReady || !_ctReady)
         {
@@ -92,7 +92,7 @@ public class ReadyUpState : BaseState
         }
 
         Server.PrintToChatAll($" {ChatColors.Green} All players are ready! Starting match!");
-        StateMachine.SwitchState(MatchConfig.knifeRound ? GameState.Knife : GameState.Live);
+        StateMachine.SwitchState(MatchConfig.KnifeRound ? GameState.Knife : GameState.Live);
     }
 
     private void OnPlayerUnReady(int userid)
@@ -116,13 +116,13 @@ public class ReadyUpState : BaseState
         }
 
         Server.PrintToChatAll(
-            $" {ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");
+            $" {ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.PlayersPerTeam * 2}");
     }
 
     private static void OnForceReady()
     {
         Server.PrintToChatAll($" {ChatColors.Green} Forced ready! Starting match!");
-        StateMachine.SwitchState(MatchConfig.knifeRound ? GameState.Knife : GameState.Live);
+        StateMachine.SwitchState(MatchConfig.KnifeRound ? GameState.Knife : GameState.Live);
     }
 
     // Used for testing

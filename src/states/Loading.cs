@@ -6,8 +6,8 @@ public class LoadingState : BaseState
     {
         Console.WriteLine("Switched to Loading state");
 
-        MatchConfig.loadMaps();
-        MatchConfig.loadSettings();
+        MatchConfig.LoadMaps();
+        MatchConfig.LoadSettings();
     }
 
     public override void Leave() { }
