@@ -42,7 +42,7 @@ public class LiveState : BaseState
             Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
             Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
 
-            CSTVManager.startDemoRecording();
+            CstvManager.StartDemoRecording();
         });
     }
 
@@ -57,13 +57,13 @@ public class LiveState : BaseState
     public override void OnMatchEnd(EventCsWinPanelMatch @event)
     {
         var delay = 15;
-        delay += CSTVManager.getTvDelay();
+        delay += CstvManager.GetTvDelay();
 
         Console.WriteLine($"Waiting for match end panel and cstv delay {delay}");
 
         Utils.DelayedCall(TimeSpan.FromSeconds(delay), () =>
         {
-            CSTVManager.stopDemoRecording();
+            CstvManager.StopDemoRecording();
 
             StateMachine.SwitchState(GameState.Loading);
             Server.ExecuteCommand($"changelevel {Server.MapName}");
