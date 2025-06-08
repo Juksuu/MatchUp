@@ -168,7 +168,7 @@ public static class MatchConfig
         if (Server.MapName == MatchConfig.map)
         {
             Server.ExecuteCommand("mp_restartgame 1");
-            StateMachine.SwitchState(GameState.Readyup);
+            StateMachine.SwitchState(GameState.ReadyUp);
         }
         else
         {

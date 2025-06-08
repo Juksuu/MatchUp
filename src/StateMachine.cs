@@ -6,7 +6,7 @@ public enum GameState
 {
     Loading,
     Setup,
-    Readyup,
+    ReadyUp,
     Knife,
     Live,
     End
