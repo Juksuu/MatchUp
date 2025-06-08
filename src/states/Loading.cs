@@ -1,4 +1,4 @@
-namespace MatchUp;
+namespace MatchUp.states;
 
 public class LoadingState : BaseState
 {

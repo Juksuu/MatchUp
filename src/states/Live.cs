@@ -4,7 +4,7 @@ using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace MatchUp;
+namespace MatchUp.states;
 
 public class LiveState : BaseState
 {

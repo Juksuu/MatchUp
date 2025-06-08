@@ -3,7 +3,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace MatchUp;
+namespace MatchUp.states;
 
 public class SetupState : BaseState
 {
