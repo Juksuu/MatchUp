@@ -14,14 +14,14 @@ public class ReadyUpState : BaseState
 
     public ReadyUpState() : base()
     {
-        commandActions["r"] = (userid, args) => OnPlayerReady(userid);
-        commandActions["ready"] = (userid, args) => OnPlayerReady(userid);
-        commandActions["ur"] = (userid, args) => OnPlayerUnReady(userid);
-        commandActions["unready"] = (userid, args) => OnPlayerUnReady(userid);
-        commandActions["forceready"] = (userid, args) => OnForceReady();
+        CommandActions["r"] = (userid, args) => OnPlayerReady(userid);
+        CommandActions["ready"] = (userid, args) => OnPlayerReady(userid);
+        CommandActions["ur"] = (userid, args) => OnPlayerUnReady(userid);
+        CommandActions["unready"] = (userid, args) => OnPlayerUnReady(userid);
+        CommandActions["forceready"] = (userid, args) => OnForceReady();
 
         // Used for testing
-        commandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
+        CommandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
     }
 
     public override void Enter(GameState oldState)

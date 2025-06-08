@@ -11,12 +11,12 @@ public class KnifeState : BaseState
 
     public KnifeState()
     {
-        commandActions["stay"] = (userid, _) => OnStay(userid);
-        commandActions["switch"] = (userid, _) => OnSwitch(userid);
+        CommandActions["stay"] = (userid, _) => OnStay(userid);
+        CommandActions["switch"] = (userid, _) => OnSwitch(userid);
 
         // Used for testing
-        commandActions["kill"] = (userid, _) => OnPlayerSuicide(userid);
-        commandActions["bot_ct"] = (userid, _) => OnBotCt(userid);
+        CommandActions["kill"] = (userid, _) => OnPlayerSuicide(userid);
+        CommandActions["bot_ct"] = (userid, _) => OnBotCt(userid);
     }
 
     public override void Enter(GameState oldState)

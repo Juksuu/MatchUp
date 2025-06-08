@@ -9,12 +9,12 @@ public class SetupState : BaseState
 {
     public SetupState() : base()
     {
-        commandActions["map"] = (userid, args) => OnMapSelection(userid);
-        commandActions["team_size"] = (userid, args) => OnTeamSize(userid, args);
-        commandActions["knife"] = (userid, args) => OnKnife(userid, args);
-        commandActions["config"] = (userid, option) => MatchConfig.print(userid);
-        commandActions["start"] = (userid, option) => MatchConfig.StartMatch();
-        commandActions["help"] = (userid, option) => OnHelp(userid);
+        CommandActions["map"] = (userid, args) => OnMapSelection(userid);
+        CommandActions["team_size"] = (userid, args) => OnTeamSize(userid, args);
+        CommandActions["knife"] = (userid, args) => OnKnife(userid, args);
+        CommandActions["config"] = (userid, option) => MatchConfig.print(userid);
+        CommandActions["start"] = (userid, option) => MatchConfig.StartMatch();
+        CommandActions["help"] = (userid, option) => OnHelp(userid);
     }
 
 

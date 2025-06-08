@@ -20,10 +20,10 @@ public class MatchUp : BasePlugin
 
         if (hotReload)
         {
-            StateMachine.getCurrentState().OnMapStart();
+            StateMachine.GetCurrentState().OnMapStart();
         }
 
-        RegisterListener<Listeners.OnMapStart>(name => StateMachine.getCurrentState().OnMapStart());
+        RegisterListener<Listeners.OnMapStart>(name => StateMachine.GetCurrentState().OnMapStart());
     }
 
     // Console commands
@@ -69,7 +69,7 @@ public class MatchUp : BasePlugin
     public void OnReConfigure(CCSPlayerController? player, CommandInfo command)
     {
         // only allow reconfiguring during the setup phase
-        if (StateMachine.getCurrentState().GetType() != typeof(SetupState))
+        if (StateMachine.GetCurrentState().GetType() != typeof(SetupState))
         {
             Console.WriteLine("Can only reconfigure during setup phase");
             return;
@@ -103,7 +103,7 @@ public class MatchUp : BasePlugin
             return HookResult.Continue;
         }
 
-        var state = StateMachine.getCurrentState();
+        var state = StateMachine.GetCurrentState();
 
         if (result.Length > 1)
         {
@@ -123,28 +123,28 @@ public class MatchUp : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
-        StateMachine.getCurrentState().OnPlayerTeam(@event);
+        StateMachine.GetCurrentState().OnPlayerTeam(@event);
         return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
     {
-        StateMachine.getCurrentState().OnPlayerConnect(@event);
+        StateMachine.GetCurrentState().OnPlayerConnect(@event);
         return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnMatchEnd(EventCsWinPanelMatch @event, GameEventInfo info)
     {
-        StateMachine.getCurrentState().OnMatchEnd(@event);
+        StateMachine.GetCurrentState().OnMatchEnd(@event);
         return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
     {
-        StateMachine.getCurrentState().OnRoundEnd(@event);
+        StateMachine.GetCurrentState().OnRoundEnd(@event);
         return HookResult.Continue;
     }
 

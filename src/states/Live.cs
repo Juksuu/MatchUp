@@ -16,13 +16,13 @@ public class LiveState : BaseState
 
     public LiveState() : base()
     {
-        commandActions["pause"] = (userid, args) => OnPlayerPause(userid);
-        commandActions["unpause"] = (userid, args) => OnPlayerUnpause(userid);
-        commandActions["backup"] = (userid, args) => OnPlayerBackup(userid);
+        CommandActions["pause"] = (userid, args) => OnPlayerPause(userid);
+        CommandActions["unpause"] = (userid, args) => OnPlayerUnpause(userid);
+        CommandActions["backup"] = (userid, args) => OnPlayerBackup(userid);
 
         // Used for testing
-        commandActions["kill"] = (userid, args) => OnPlayerSuicide(userid);
-        commandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
+        CommandActions["kill"] = (userid, args) => OnPlayerSuicide(userid);
+        CommandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
     }
 
     public override void Enter(GameState oldState)
