@@ -8,8 +8,8 @@ namespace MatchUp.states;
 
 public class LiveState : BaseState
 {
-    private bool _team1Pause;
-    private bool _team2Pause;
+    private bool _terroristPause;
+    private bool _counterTerroristPause;
 
     private ConVar? _lastBackupConVar;
     private string? _lastRoundPlayedBackupFile;
@@ -28,8 +28,7 @@ public class LiveState : BaseState
     public override void Enter(GameState oldState)
     {
         Console.WriteLine("Switched to Live state");
-
-
+        
         Console.WriteLine("Executing Live cfg");
         Server.ExecuteCommand("exec MatchUp/live.cfg");
 
@@ -49,8 +48,8 @@ public class LiveState : BaseState
 
     public override void Leave()
     {
-        _team1Pause = false;
-        _team2Pause = false;
+        _terroristPause = false;
+        _counterTerroristPause = false;
         _lastRoundPlayedBackupFile = null;
         _lastBackupConVar = null;
     }
@@ -79,23 +78,24 @@ public class LiveState : BaseState
             return;
         }
 
-        var paused = _team1Pause || _team2Pause;
+        var paused = _terroristPause || _counterTerroristPause;
         if (paused)
         {
             player.PrintToChat($" {ChatColors.Green} Game is already paused!");
             return;
         }
 
-        _team1Pause = true;
-        _team2Pause = true;
+        _terroristPause = true;
+        _counterTerroristPause = true;
 
-        if (player.TeamNum == (byte)CsTeam.Terrorist)
+        switch (player.TeamNum)
         {
-            Server.PrintToChatAll($" {ChatColors.Green} Terrorists have paused the game!");
-        }
-        else if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
-        {
-            Server.PrintToChatAll($" {ChatColors.Green} Counter-Terrorists have paused the game!");
+            case (byte)CsTeam.Terrorist:
+                Server.PrintToChatAll($" {ChatColors.Green} Terrorists have paused the game!");
+                break;
+            case (byte)CsTeam.CounterTerrorist:
+                Server.PrintToChatAll($" {ChatColors.Green} Counter-Terrorists have paused the game!");
+                break;
         }
 
         Server.ExecuteCommand("mp_pause_match");
@@ -109,33 +109,25 @@ public class LiveState : BaseState
             return;
         }
 
-        if (player.TeamNum == (byte)CsTeam.Terrorist)
+        switch (player.TeamNum)
         {
-            if (!_team1Pause)
-            {
+            case (byte)CsTeam.Terrorist when !_terroristPause:
                 player.PrintToChat($" {ChatColors.Green} Your team already unpaused!");
-            }
-            else
-            {
-                _team1Pause = false;
+                break;
+            case (byte)CsTeam.Terrorist:
+                _terroristPause = false;
                 Server.PrintToChatAll($" {ChatColors.Green} Terrorists have unpaused the game!");
-            }
-        }
-        else if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
-        {
-            if (!_team2Pause)
-            {
+                break;
+            case (byte)CsTeam.CounterTerrorist when !_counterTerroristPause:
                 player.PrintToChat($" {ChatColors.Green} Your team already unpaused!");
-            }
-            else
-            {
-                _team2Pause = false;
+                break;
+            case (byte)CsTeam.CounterTerrorist:
+                _counterTerroristPause = false;
                 Server.PrintToChatAll($" {ChatColors.Green} Counter-Terrorists have unpaused the game!");
-            }
+                break;
         }
-
-
-        if (!_team1Pause && !_team2Pause)
+        
+        if (!_terroristPause && !_counterTerroristPause)
         {
             Server.ExecuteCommand("mp_unpause_match");
         }
@@ -149,7 +141,7 @@ public class LiveState : BaseState
             return;
         }
 
-        var paused = _team1Pause || _team2Pause;
+        var paused = _terroristPause || _counterTerroristPause;
         if (!paused)
         {
             player.PrintToChat($" {ChatColors.Red} Game needs to be paused to use backups");
