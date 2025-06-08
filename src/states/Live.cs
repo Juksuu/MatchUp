@@ -166,7 +166,7 @@ public class LiveState : BaseState
 
         var backupSelection = new ChatMenu("Backup selection");
         var lastRound = int.Parse(string.Concat(backupFileName.SkipLast(4).TakeLast(2)));
-        player.PrintToChat($"Last backup file {lastRound}");
+        player.PrintToChat($" Last backup file {lastRound}");
         for (var i = 0; i <= lastRound; i++)
         {
             var roundNumberString = i < 10 ? $"0{i}" : $"{i}";
@@ -185,7 +185,7 @@ public class LiveState : BaseState
 
         var round = selection.Split(" ")[1];
         var backupFileName = string.Concat(_lastRoundPlayedBackupFile.SkipLast(6)) + $"{round}.txt";
-        player.PrintToChat($"Restoring previous state using backup file {backupFileName}");
+        player.PrintToChat($" Restoring previous state using backup file {backupFileName}");
 
         Server.ExecuteCommand($"mp_backup_restore_load_file {backupFileName}");
     }
