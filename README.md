@@ -4,12 +4,14 @@ MatchUp - CS2 Match creation plugin
 MatchUp is CS2 plugin for creating and running matches directly from the server
 
 ## Installation
+
 * Install Metamod (https://cs2.poggu.me/metamod/installation/)
 * Install MatchUp
     * Releases page should contain a package that has everything, just move the contents to `cs2/game/csgo` folder
     * Verify the installation by typing `css_plugins list` and you should see MatchUp listed there.
 
 ## Features
+
 - Easy creation of a match directly from the server
 - Knife round (Can be toggled in setup phase)
 
@@ -34,6 +36,7 @@ Commands can be triggered with either ! or .
 - `!forceready` Force start match
 
 For testing only
+
 - `!bot_ct` Add bot for ct
 
 ### Knife phase
@@ -42,6 +45,7 @@ For testing only
 - `!stay` Stay on current side
 
 For testing only
+
 - `!kill` Kill self in game
 - `!bot_ct` Add bot for ct
 
@@ -52,14 +56,21 @@ For testing only
 - `!backup` Can be used in pause state to backup rounds
 
 For testing only
+
 - `!kill` Kill self in game
 - `!bot_ct` Add bot for ct
+
+## Console Commands
+
+- `matchup_reconfigure` This command tells MatchUp to reload the configuration (maps and settings). This only has an
+  effect during the Setup phase
 
 ## Configuration
 
 All the Configuration files can be found in `csgo/cfg/MatchUp`
 
 ## Credits and thanks!
+
 * [MatchZy](https://github.com/shobhit-pathak/MatchZy/)
 * [CS2-Practice-Plugin](https://github.com/CHR15cs/CS2-Practice-Plugin)
 * [CounterStrikeSharp](https://github.com/roflmuffin/CounterStrikeSharp/)
