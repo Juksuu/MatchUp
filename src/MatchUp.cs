@@ -64,6 +64,12 @@ public class MatchUp : BasePlugin
         MatchConfig.StartMatch();
     }
 
+    [ConsoleCommand("matchup_reconfigure", "Reloads the MatchUp configs")]
+    public void OnReConfigure(CCSPlayerController? player, CommandInfo command)
+    {
+        MatchConfig.loadMaps();
+        MatchConfig.loadSettings();
+    }
 
     // Events
     [GameEventHandler]
