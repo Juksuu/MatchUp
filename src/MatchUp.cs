@@ -23,7 +23,7 @@ public class MatchUp : BasePlugin
             StateMachine.GetCurrentState().OnMapStart();
         }
 
-        RegisterListener<Listeners.OnMapStart>(name => StateMachine.GetCurrentState().OnMapStart());
+        RegisterListener<Listeners.OnMapStart>(_ => StateMachine.GetCurrentState().OnMapStart());
     }
 
     // Console commands
@@ -31,12 +31,10 @@ public class MatchUp : BasePlugin
     public void OnKickAll(CCSPlayerController? player, CommandInfo command)
     {
         var playerEntities = Utilities.FindAllEntitiesByDesignerName<CCSPlayerController>("cs_player_controller");
-        foreach (var entity in playerEntities)
+        foreach (var playerEntity in playerEntities)
         {
-            if (player == null) continue;
-            if (player.SteamID == 0) continue; // Player is a bot
-
-            Server.ExecuteCommand($"kick {player.PlayerName}");
+            if (playerEntity.SteamID == 0) continue; // Player is a bot
+            Server.ExecuteCommand($"kick {playerEntity.PlayerName}");
         }
     }
 
@@ -83,7 +81,7 @@ public class MatchUp : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerChat(EventPlayerChat @event, GameEventInfo info)
     {
-        if (!@event.Text.StartsWith(".") && !@event.Text.StartsWith("!"))
+        if (!@event.Text.StartsWith('.') && !@event.Text.StartsWith('!'))
         {
             return HookResult.Continue;
         }
@@ -95,7 +93,7 @@ public class MatchUp : BasePlugin
         }
 
         var result = @event.Text.Split(" ");
-        var command = result[0].Trim(new Char[] { '!', '.' });
+        var command = result[0].Trim('!', '.');
 
         if (command == "reset")
         {
@@ -109,13 +107,13 @@ public class MatchUp : BasePlugin
         {
             var args = result.Skip(1).ToArray();
             Console.WriteLine($"Got command with args: {command}, {string.Join(", ", args)}");
-            state.OnChatCommand(@event.Userid, command!, args);
+            state.OnChatCommand(@event.Userid, command, args);
 
             return HookResult.Continue;
         }
 
         Console.WriteLine($"Got command: {command}");
-        state.OnChatCommand(@event.Userid, command!);
+        state.OnChatCommand(@event.Userid, command);
 
         return HookResult.Continue;
     }
@@ -148,7 +146,7 @@ public class MatchUp : BasePlugin
         return HookResult.Continue;
     }
 
-    private void OnReset()
+    private static void OnReset()
     {
         Server.PrintToChatAll($" {ChatColors.Green}Resetting!!!");
 
