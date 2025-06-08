@@ -67,6 +67,13 @@ public class MatchUp : BasePlugin
     [ConsoleCommand("matchup_reconfigure", "Reloads the MatchUp configs")]
     public void OnReConfigure(CCSPlayerController? player, CommandInfo command)
     {
+        // only allow reconfiguring during the setup phase
+        if (StateMachine.getCurrentState().GetType() != typeof(SetupState))
+        {
+            Console.WriteLine("Can only reconfigure during setup phase");
+            return;
+        }
+
         MatchConfig.loadMaps();
         MatchConfig.loadSettings();
     }

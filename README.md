@@ -60,10 +60,14 @@ For testing only
 - `!kill` Kill self in game
 - `!bot_ct` Add bot for ct
 
+### Always
+
+- `!reset` Reset MatchUp
+
 ## Console Commands
 
-- `matchup_reconfigure` This command tells MatchUp to reload the configuration (maps and settings). This only has an
-  effect during the Setup phase
+- `matchup_reconfigure` This command lets MatchUp reload the maps and settings. This is only allowed during the setup
+  phase.
 
 ## Configuration
 
