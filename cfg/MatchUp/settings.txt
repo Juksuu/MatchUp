@@ -1,0 +1,1 @@
+﻿; These settings can be used to change the behavior of MatchUp
