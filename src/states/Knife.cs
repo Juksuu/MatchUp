@@ -7,16 +7,16 @@ namespace MatchUp.states;
 public class KnifeState : BaseState
 {
     private CsTeam winningTeam;
-    private bool knifeEnded = false;
+    private bool knifeEnded;
 
-    public KnifeState() : base()
+    public KnifeState()
     {
-        commandActions["stay"] = (userid, args) => OnStay(userid);
-        commandActions["switch"] = (userid, args) => OnSwitch(userid);
+        commandActions["stay"] = (userid, _) => OnStay(userid);
+        commandActions["switch"] = (userid, _) => OnSwitch(userid);
 
         // Used for testing
-        commandActions["kill"] = (userid, args) => OnPlayerSuicide(userid);
-        commandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
+        commandActions["kill"] = (userid, _) => OnPlayerSuicide(userid);
+        commandActions["bot_ct"] = (userid, _) => OnBotCt(userid);
     }
 
     public override void Enter(GameState oldState)
@@ -46,13 +46,14 @@ public class KnifeState : BaseState
         Console.WriteLine("Executing warmup cfg");
         Server.ExecuteCommand("exec MatchUp/warmup.cfg");
 
-        if (@event.Winner == (byte)CsTeam.Terrorist)
+        switch (@event.Winner)
         {
-            Server.PrintToChatAll($" {ChatColors.Green}Kniferound ended: Terrorists win");
-        }
-        else if (@event.Winner == (byte)CsTeam.CounterTerrorist)
-        {
-            Server.PrintToChatAll($" {ChatColors.Green}Kniferound ended: Counter-Terrorists win");
+            case (byte)CsTeam.Terrorist:
+                Server.PrintToChatAll($" {ChatColors.Green}Kniferound ended: Terrorists win");
+                break;
+            case (byte)CsTeam.CounterTerrorist:
+                Server.PrintToChatAll($" {ChatColors.Green}Kniferound ended: Counter-Terrorists win");
+                break;
         }
 
         winningTeam = (CsTeam)@event.Winner;
@@ -64,11 +65,13 @@ public class KnifeState : BaseState
     private void OnSwitch(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (knifeEnded && player != null && player.TeamNum == (byte)winningTeam)
+        if (!knifeEnded || player == null || player.TeamNum != (byte)winningTeam)
         {
-            Server.ExecuteCommand("mp_swapteams");
-            StateMachine.SwitchState(GameState.Live);
+            return;
         }
+
+        Server.ExecuteCommand("mp_swapteams");
+        StateMachine.SwitchState(GameState.Live);
     }
 
     private void OnStay(int userid)
@@ -82,7 +85,7 @@ public class KnifeState : BaseState
 
 
     // Used for testing
-    private void OnPlayerSuicide(int userid)
+    private static void OnPlayerSuicide(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
 
@@ -93,7 +96,7 @@ public class KnifeState : BaseState
     }
 
     // Used for testing
-    private void OnBotCt(int userid)
+    private static void OnBotCt(int userid)
     {
         Server.ExecuteCommand("bot_add_ct");
     }
