@@ -6,7 +6,6 @@ namespace MatchUp;
 
 public class KnifeState : BaseState
 {
-
     private CsTeam winningTeam;
     private bool knifeEnded = false;
 

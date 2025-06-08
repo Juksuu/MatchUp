@@ -8,7 +8,6 @@ namespace MatchUp;
 
 public class LiveState : BaseState
 {
-
     private bool team1Pause = false;
     private bool team2Pause = false;
 
@@ -165,7 +164,7 @@ public class LiveState : BaseState
             {
                 Action<CCSPlayerController, ChatMenuOption> backupHandle =
                     (CCSPlayerController player, ChatMenuOption option) =>
-                    OnPlayerSelectBackup(player, option.Text);
+                        OnPlayerSelectBackup(player, option.Text);
 
                 var backupSelection = new ChatMenu("Backup selection");
 

@@ -14,9 +14,6 @@ public class LoadingState : BaseState
 
     public override void OnMapStart()
     {
-        Utils.DelayedCall(TimeSpan.FromSeconds(1), () =>
-        {
-            StateMachine.SwitchState(GameState.Setup);
-        });
+        Utils.DelayedCall(TimeSpan.FromSeconds(1), () => { StateMachine.SwitchState(GameState.Setup); });
     }
 }

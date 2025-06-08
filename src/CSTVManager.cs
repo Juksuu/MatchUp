@@ -2,9 +2,9 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Cvars;
 
 namespace MatchUp;
+
 public static class CSTVManager
 {
-
     static bool isTvEnabled = getTvEnabled();
 
     public static int getTvDelay()

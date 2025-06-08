@@ -85,9 +85,6 @@ public class SetupState : BaseState
 
     public override void OnMapStart()
     {
-        Utils.DelayedCall(TimeSpan.FromSeconds(1), () =>
-        {
-            StateMachine.SwitchState(GameState.Readyup);
-        });
+        Utils.DelayedCall(TimeSpan.FromSeconds(1), () => { StateMachine.SwitchState(GameState.ReadyUp); });
     }
 }
