@@ -149,8 +149,7 @@ public class LiveState : BaseState
         }
 
         var backupFileName = _lastRoundPlayedBackupFile;
-        if (_lastBackupConVar != null && _lastBackupConVar.StringValue != null &&
-            _lastBackupConVar.StringValue != "")
+        if (_lastBackupConVar != null && !string.IsNullOrEmpty(_lastBackupConVar.StringValue))
         {
             backupFileName = _lastBackupConVar.StringValue;
             _lastRoundPlayedBackupFile = _lastBackupConVar.StringValue;
