@@ -6,8 +6,8 @@ namespace MatchUp.states;
 
 public class KnifeState : BaseState
 {
-    private CsTeam winningTeam;
-    private bool knifeEnded;
+    private CsTeam _winningTeam;
+    private bool _knifeEnded;
 
     public KnifeState()
     {
@@ -38,7 +38,7 @@ public class KnifeState : BaseState
 
     public override void Leave()
     {
-        knifeEnded = false;
+        _knifeEnded = false;
     }
 
     public override void OnRoundEnd(EventRoundEnd @event)
@@ -56,16 +56,16 @@ public class KnifeState : BaseState
                 break;
         }
 
-        winningTeam = (CsTeam)@event.Winner;
+        _winningTeam = (CsTeam)@event.Winner;
 
         Server.PrintToChatAll($" {ChatColors.Green}Please select side with !stay/!switch");
-        knifeEnded = true;
+        _knifeEnded = true;
     }
 
     private void OnSwitch(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (!knifeEnded || player == null || player.TeamNum != (byte)winningTeam)
+        if (!_knifeEnded || player == null || player.TeamNum != (byte)_winningTeam)
         {
             return;
         }
@@ -77,7 +77,7 @@ public class KnifeState : BaseState
     private void OnStay(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (knifeEnded && player != null && player.TeamNum == (byte)winningTeam)
+        if (_knifeEnded && player != null && player.TeamNum == (byte)_winningTeam)
         {
             StateMachine.SwitchState(GameState.Live);
         }
