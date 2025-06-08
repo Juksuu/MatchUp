@@ -7,14 +7,14 @@ namespace MatchUp.states;
 
 public class SetupState : BaseState
 {
-    public SetupState() : base()
+    public SetupState()
     {
-        CommandActions["map"] = (userid, args) => OnMapSelection(userid);
-        CommandActions["team_size"] = (userid, args) => OnTeamSize(userid, args);
-        CommandActions["knife"] = (userid, args) => OnKnife(userid, args);
-        CommandActions["config"] = (userid, option) => MatchConfig.print(userid);
-        CommandActions["start"] = (userid, option) => MatchConfig.StartMatch();
-        CommandActions["help"] = (userid, option) => OnHelp(userid);
+        CommandActions["map"] = (userid, _) => OnMapSelection(userid);
+        CommandActions["team_size"] = OnTeamSize;
+        CommandActions["knife"] = OnKnife;
+        CommandActions["config"] = (userid, _) => MatchConfig.print(userid);
+        CommandActions["start"] = (_, _) => MatchConfig.StartMatch();
+        CommandActions["help"] = (userid, _) => OnHelp(userid);
     }
 
 
@@ -28,7 +28,12 @@ public class SetupState : BaseState
 
     public override void Leave() { }
 
-    private void OnMapSelection(int userid)
+    public override void OnMapStart()
+    {
+        Utils.DelayedCall(TimeSpan.FromSeconds(1), () => { StateMachine.SwitchState(GameState.ReadyUp); });
+    }
+
+    private static void OnMapSelection(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
         if (player == null)
@@ -37,11 +42,11 @@ public class SetupState : BaseState
         }
 
         Action<CCSPlayerController, ChatMenuOption> mapChangeHandle =
-            (CCSPlayerController player, ChatMenuOption option) => MatchConfig.setMap(option.Text, player);
+            (actionPlayer, option) => MatchConfig.setMap(option.Text, actionPlayer);
 
         var mapSelection = new ChatMenu("Map Selection");
 
-        foreach (string map in MatchConfig.mapPool)
+        foreach (var map in MatchConfig.mapPool)
         {
             mapSelection.AddMenuOption(map, mapChangeHandle);
         }
@@ -49,7 +54,7 @@ public class SetupState : BaseState
         MenuManager.OpenChatMenu(player, mapSelection);
     }
 
-    private void OnHelp(int userid)
+    private static void OnHelp(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
         if (player == null)
@@ -65,7 +70,7 @@ public class SetupState : BaseState
         player.PrintToChat($" {ChatColors.Green}!knife <boolean> {ChatColors.Default} set knife round for match");
     }
 
-    private void OnTeamSize(int userid, string[]? args)
+    private static void OnTeamSize(int userid, string[]? args)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
         if (player != null && (args == null || !MatchConfig.setTeamSize(args[0], player)))
@@ -74,17 +79,12 @@ public class SetupState : BaseState
         }
     }
 
-    private void OnKnife(int userid, string[]? args)
+    private static void OnKnife(int userid, string[]? args)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
         if (player != null && (args == null || !MatchConfig.setKnife(args[0], player)))
         {
             player.PrintToChat(" Command usage: !knife <boolean>");
         }
-    }
-
-    public override void OnMapStart()
-    {
-        Utils.DelayedCall(TimeSpan.FromSeconds(1), () => { StateMachine.SwitchState(GameState.ReadyUp); });
     }
 }
