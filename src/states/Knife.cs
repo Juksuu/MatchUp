@@ -49,10 +49,10 @@ public class KnifeState : BaseState
         switch (@event.Winner)
         {
             case (byte)CsTeam.Terrorist:
-                Server.PrintToChatAll($" {ChatColors.Green}Kniferound ended: Terrorists win");
+                Server.PrintToChatAll($" {ChatColors.Green}Knife round ended: Terrorists win");
                 break;
             case (byte)CsTeam.CounterTerrorist:
-                Server.PrintToChatAll($" {ChatColors.Green}Kniferound ended: Counter-Terrorists win");
+                Server.PrintToChatAll($" {ChatColors.Green}Knife round ended: Counter-Terrorists win");
                 break;
         }
 
@@ -96,7 +96,7 @@ public class KnifeState : BaseState
     }
 
     // Used for testing
-    private static void OnBotCt(int userid)
+    private static void OnBotCt(int _)
     {
         Server.ExecuteCommand("bot_add_ct");
     }
