@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.Events;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MatchUp;
+
 public class MatchUp : BasePlugin
 {
     public override string ModuleName => "MatchUp";
@@ -63,6 +64,19 @@ public class MatchUp : BasePlugin
         MatchConfig.StartMatch();
     }
 
+    [ConsoleCommand("matchup_reconfigure", "Reloads the MatchUp configs")]
+    public void OnReConfigure(CCSPlayerController? player, CommandInfo command)
+    {
+        // only allow reconfiguring during the setup phase
+        if (StateMachine.getCurrentState().GetType() != typeof(SetupState))
+        {
+            Console.WriteLine("Can only reconfigure during setup phase");
+            return;
+        }
+
+        MatchConfig.loadMaps();
+        MatchConfig.loadSettings();
+    }
 
     // Events
     [GameEventHandler]
