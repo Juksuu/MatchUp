@@ -100,10 +100,10 @@ public static class MatchConfig
             printMessage = player.PrintToChat;
         }
 
-        printMessage($"{ChatColors.Green} Current config");
-        printMessage($"{ChatColors.Grey} Map: {ChatColors.Gold} {_map}");
-        printMessage($"{ChatColors.Grey} Players per team: {ChatColors.Gold} {PlayersPerTeam}");
-        printMessage($"{ChatColors.Grey} Knife round enabled: {ChatColors.Gold} {KnifeRound}");
+        printMessage($" {ChatColors.Green}Current config");
+        printMessage($" {ChatColors.Grey}Map: {ChatColors.Gold}{_map}");
+        printMessage($" {ChatColors.Grey}Players per team: {ChatColors.Gold}{PlayersPerTeam}");
+        printMessage($" {ChatColors.Grey}Knife round enabled: {ChatColors.Gold}{KnifeRound}");
     }
 
     public static bool SetMap(string? map, CCSPlayerController? player = null)
@@ -162,7 +162,7 @@ public static class MatchConfig
 
     public static void StartMatch()
     {
-        Server.PrintToChatAll($"{ChatColors.Green}Setting up match with current config");
+        Server.PrintToChatAll($" {ChatColors.Green}Setting up match with current config");
         Print();
 
         if (Server.MapName == _map)
