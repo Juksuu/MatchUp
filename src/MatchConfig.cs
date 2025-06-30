@@ -84,22 +84,17 @@ public static class MatchConfig
 
     public static void Print(int? userid = null)
     {
-        Action<string> printMessage;
-        if (!userid.HasValue)
+        // try to find the player that initiated the call if userid has a value
+        var player = userid.HasValue ? Utilities.GetPlayerFromUserid(userid.Value) : null;
+        if (userid.HasValue && player == null)
         {
-            printMessage = Server.PrintToChatAll;
+            // if the player was not found despite userid having a value, we do not continue
+            // todo explain what the idea behind this logic is. How do we reach this case? I would like to simplify it by just printing to all chat.
+            return;
         }
-        else
-        {
-            var player = Utilities.GetPlayerFromUserid(userid.Value);
-            if (player == null)
-            {
-                return;
-            }
-
-            printMessage = player.PrintToChat;
-        }
-
+        // define where to send the message to: player is not null -> player's chat; else all chat
+        Action<string> printMessage = player != null ? player.PrintToChat : Server.PrintToChatAll;
+        // send the config messages
         printMessage($" {ChatColors.Green}Current config");
         printMessage($" {ChatColors.Grey}Map: {ChatColors.Gold}{_map}");
         printMessage($" {ChatColors.Grey}Players per team: {ChatColors.Gold}{PlayersPerTeam}");
