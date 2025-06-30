@@ -75,7 +75,7 @@ public class SetupState : BaseState
         var player = Utilities.GetPlayerFromUserid(userid);
         if (player != null && (args == null || !MatchConfig.SetTeamSize(args[0], player)))
         {
-            player.PrintToChat(" Command usage: !team_size <number>");
+            player.PrintToChat("Command usage: !team_size <number>");
         }
     }
 
@@ -84,7 +84,7 @@ public class SetupState : BaseState
         var player = Utilities.GetPlayerFromUserid(userid);
         if (player != null && (args == null || !MatchConfig.SetKnife(args[0], player)))
         {
-            player.PrintToChat(" Command usage: !knife <boolean>");
+            player.PrintToChat("Command usage: !knife <boolean>");
         }
     }
 }

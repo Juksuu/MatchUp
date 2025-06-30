@@ -83,7 +83,7 @@ public class ReadyUpState : BaseState
         player.PrintToChat($"{ChatColors.Green} You have been marked ready!");
 
         Server.PrintToChatAll(
-            $" {ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.PlayersPerTeam * 2}");
+            $"{ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.PlayersPerTeam * 2}");
 
         if (!_tReady || !_ctReady)
         {
@@ -116,7 +116,7 @@ public class ReadyUpState : BaseState
         }
 
         Server.PrintToChatAll(
-            $" {ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.PlayersPerTeam * 2}");
+            $"{ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.PlayersPerTeam * 2}");
     }
 
     private static void OnForceReady()
