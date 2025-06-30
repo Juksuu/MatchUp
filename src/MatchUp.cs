@@ -148,7 +148,7 @@ public class MatchUp : BasePlugin
 
     private static void OnReset()
     {
-        Server.PrintToChatAll($" {ChatColors.Green}Resetting!!!");
+        Server.PrintToChatAll($"{ChatColors.Green}Resetting!!!");
 
         Utils.DelayedCall(TimeSpan.FromSeconds(1), () =>
         {

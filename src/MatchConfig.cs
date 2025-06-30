@@ -116,7 +116,7 @@ public static class MatchConfig
         Console.WriteLine($"Setting map to {map}");
         if (player != null)
         {
-            player.PrintToChat($" Setting map to: {map}");
+            player.PrintToChat($"Setting map to: {map}");
         }
 
         _map = map;
@@ -134,7 +134,7 @@ public static class MatchConfig
         Console.WriteLine($"Setting team size to {parsedTeamSize}");
         if (player != null)
         {
-            player.PrintToChat($" Setting team size to: {teamSize}");
+            player.PrintToChat($"Setting team size to: {teamSize}");
         }
 
         PlayersPerTeam = parsedTeamSize;
@@ -152,7 +152,7 @@ public static class MatchConfig
         Console.WriteLine($"Setting knife round to: {parsedKnifeRound}");
         if (player != null)
         {
-            player.PrintToChat($" Setting knife round to: {parsedKnifeRound}");
+            player.PrintToChat($"Setting knife round to: {parsedKnifeRound}");
         }
 
         KnifeRound = parsedKnifeRound;
@@ -162,7 +162,7 @@ public static class MatchConfig
 
     public static void StartMatch()
     {
-        Server.PrintToChatAll($" {ChatColors.Green}Setting up match with current config");
+        Server.PrintToChatAll($"{ChatColors.Green}Setting up match with current config");
         Print();
 
         if (Server.MapName == _map)

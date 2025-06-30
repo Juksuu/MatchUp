@@ -30,9 +30,9 @@ public class KnifeState : BaseState
 
         Utils.DelayedCall(TimeSpan.FromSeconds(4), () =>
         {
-            Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
-            Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
-            Server.PrintToChatAll($" {ChatColors.Green}KNIFE!");
+            Server.PrintToChatAll($"{ChatColors.Green}KNIFE!");
+            Server.PrintToChatAll($"{ChatColors.Green}KNIFE!");
+            Server.PrintToChatAll($"{ChatColors.Green}KNIFE!");
         });
     }
 
@@ -49,16 +49,16 @@ public class KnifeState : BaseState
         switch (@event.Winner)
         {
             case (byte)CsTeam.Terrorist:
-                Server.PrintToChatAll($" {ChatColors.Green}Knife round ended: Terrorists win");
+                Server.PrintToChatAll($"{ChatColors.Green}Knife round ended: Terrorists win");
                 break;
             case (byte)CsTeam.CounterTerrorist:
-                Server.PrintToChatAll($" {ChatColors.Green}Knife round ended: Counter-Terrorists win");
+                Server.PrintToChatAll($"{ChatColors.Green}Knife round ended: Counter-Terrorists win");
                 break;
         }
 
         _winningTeam = (CsTeam)@event.Winner;
 
-        Server.PrintToChatAll($" {ChatColors.Green}Please select side with !stay/!switch");
+        Server.PrintToChatAll($"{ChatColors.Green}Please select side with !stay/!switch");
         _knifeEnded = true;
     }
 
