@@ -89,7 +89,7 @@ public static class MatchConfig
         if (userid.HasValue && player == null)
         {
             // if the player was not found despite userid having a value, we do not continue
-            // TODO: probably delete this based on https://github.com/Juksuu/MatchUp/pull/12/files#r2175311885
+            // TODO: get player as an attribute instead of userid and remove this logic since MatchUp.OnPlayerChat already validates that the userid belongs to a valid player
             return;
         }
         // define where to send the message to: player is not null -> player's chat; else all chat
