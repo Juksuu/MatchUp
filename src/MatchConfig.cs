@@ -89,7 +89,7 @@ public static class MatchConfig
         if (userid.HasValue && player == null)
         {
             // if the player was not found despite userid having a value, we do not continue
-            // todo explain what the idea behind this logic is. How do we reach this case? I would like to simplify it by just printing to all chat.
+            // TODO: probably delete this based on https://github.com/Juksuu/MatchUp/pull/12/files#r2175311885
             return;
         }
         // define where to send the message to: player is not null -> player's chat; else all chat
