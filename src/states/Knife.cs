@@ -2,22 +2,21 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace MatchUp;
+namespace MatchUp.states;
 
 public class KnifeState : BaseState
 {
+    private CsTeam _winningTeam;
+    private bool _knifeEnded;
 
-    private CsTeam winningTeam;
-    private bool knifeEnded = false;
-
-    public KnifeState() : base()
+    public KnifeState()
     {
-        commandActions["stay"] = (userid, args) => OnStay(userid);
-        commandActions["switch"] = (userid, args) => OnSwitch(userid);
+        CommandActions["stay"] = (userid, _) => OnStay(userid);
+        CommandActions["switch"] = (userid, _) => OnSwitch(userid);
 
         // Used for testing
-        commandActions["kill"] = (userid, args) => OnPlayerSuicide(userid);
-        commandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
+        CommandActions["kill"] = (userid, _) => OnPlayerSuicide(userid);
+        CommandActions["bot_ct"] = (userid, _) => OnBotCt(userid);
     }
 
     public override void Enter(GameState oldState)
@@ -39,7 +38,7 @@ public class KnifeState : BaseState
 
     public override void Leave()
     {
-        knifeEnded = false;
+        _knifeEnded = false;
     }
 
     public override void OnRoundEnd(EventRoundEnd @event)
@@ -47,35 +46,38 @@ public class KnifeState : BaseState
         Console.WriteLine("Executing warmup cfg");
         Server.ExecuteCommand("exec MatchUp/warmup.cfg");
 
-        if (@event.Winner == (byte)CsTeam.Terrorist)
+        switch (@event.Winner)
         {
-            Server.PrintToChatAll($" {ChatColors.Green}Kniferound ended: Terrorists win");
-        }
-        else if (@event.Winner == (byte)CsTeam.CounterTerrorist)
-        {
-            Server.PrintToChatAll($" {ChatColors.Green}Kniferound ended: Counter-Terrorists win");
+            case (byte)CsTeam.Terrorist:
+                Server.PrintToChatAll($" {ChatColors.Green}Knife round ended: Terrorists win");
+                break;
+            case (byte)CsTeam.CounterTerrorist:
+                Server.PrintToChatAll($" {ChatColors.Green}Knife round ended: Counter-Terrorists win");
+                break;
         }
 
-        winningTeam = (CsTeam)@event.Winner;
+        _winningTeam = (CsTeam)@event.Winner;
 
         Server.PrintToChatAll($" {ChatColors.Green}Please select side with !stay/!switch");
-        knifeEnded = true;
+        _knifeEnded = true;
     }
 
     private void OnSwitch(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (knifeEnded && player != null && player.TeamNum == (byte)winningTeam)
+        if (!_knifeEnded || player == null || player.TeamNum != (byte)_winningTeam)
         {
-            Server.ExecuteCommand("mp_swapteams");
-            StateMachine.SwitchState(GameState.Live);
+            return;
         }
+
+        Server.ExecuteCommand("mp_swapteams");
+        StateMachine.SwitchState(GameState.Live);
     }
 
     private void OnStay(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
-        if (knifeEnded && player != null && player.TeamNum == (byte)winningTeam)
+        if (_knifeEnded && player != null && player.TeamNum == (byte)_winningTeam)
         {
             StateMachine.SwitchState(GameState.Live);
         }
@@ -83,7 +85,7 @@ public class KnifeState : BaseState
 
 
     // Used for testing
-    private void OnPlayerSuicide(int userid)
+    private static void OnPlayerSuicide(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
 
@@ -94,7 +96,7 @@ public class KnifeState : BaseState
     }
 
     // Used for testing
-    private void OnBotCt(int userid)
+    private static void OnBotCt(int _)
     {
         Server.ExecuteCommand("bot_add_ct");
     }

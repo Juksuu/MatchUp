@@ -2,26 +2,26 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace MatchUp;
+namespace MatchUp.states;
 
 public class ReadyUpState : BaseState
 {
-    private bool team1Ready = false;
-    private bool team2Ready = false;
+    private bool _tReady;
+    private bool _ctReady;
 
-    private List<int> team1PlayersReady = new List<int>();
-    private List<int> team2PlayersReady = new List<int>();
+    private readonly List<int> _tPlayersReady = [];
+    private readonly List<int> _ctPlayersReady = [];
 
-    public ReadyUpState() : base()
+    public ReadyUpState()
     {
-        commandActions["r"] = (userid, args) => OnPlayerReady(userid);
-        commandActions["ready"] = (userid, args) => OnPlayerReady(userid);
-        commandActions["ur"] = (userid, args) => OnPlayerUnReady(userid);
-        commandActions["unready"] = (userid, args) => OnPlayerUnReady(userid);
-        commandActions["forceready"] = (userid, args) => OnForceReady();
+        CommandActions["r"] = (userid, _) => OnPlayerReady(userid);
+        CommandActions["ready"] = (userid, _) => OnPlayerReady(userid);
+        CommandActions["ur"] = (userid, _) => OnPlayerUnReady(userid);
+        CommandActions["unready"] = (userid, _) => OnPlayerUnReady(userid);
+        CommandActions["forceready"] = (_, _) => OnForceReady();
 
         // Used for testing
-        commandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
+        CommandActions["bot_ct"] = (userid, _) => OnBotCt(userid);
     }
 
     public override void Enter(GameState oldState)
@@ -34,17 +34,16 @@ public class ReadyUpState : BaseState
 
     public override void Leave()
     {
-        team1Ready = false;
-        team2Ready = false;
+        _tReady = false;
+        _ctReady = false;
 
-        team1PlayersReady.Clear();
-        team2PlayersReady.Clear();
+        _tPlayersReady.Clear();
+        _ctPlayersReady.Clear();
     }
 
     public override void OnPlayerTeam(EventPlayerTeam @event)
     {
         var player = @event.Userid;
-
         if (!@event.Isbot && player != null && player.UserId.HasValue)
         {
             OnPlayerUnReady(player.UserId.Value);
@@ -68,83 +67,66 @@ public class ReadyUpState : BaseState
             return;
         }
 
-        if (player.TeamNum == (byte)CsTeam.Terrorist)
+        switch (player.TeamNum)
         {
-            if (!team1PlayersReady.Contains(userid))
-            {
-                team1PlayersReady.Add(userid);
-            }
-        }
-        else if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
-        {
-            if (!team2PlayersReady.Contains(userid))
-            {
-                team2PlayersReady.Add(userid);
-            }
+            case (byte)CsTeam.Terrorist when !_tPlayersReady.Contains(userid):
+                _tPlayersReady.Add(userid);
+                break;
+            case (byte)CsTeam.CounterTerrorist when !_ctPlayersReady.Contains(userid):
+                _ctPlayersReady.Add(userid);
+                break;
         }
 
-        team1Ready = team1PlayersReady.Count >= MatchConfig.playersPerTeam;
-        team2Ready = team2PlayersReady.Count >= MatchConfig.playersPerTeam;
+        _tReady = _tPlayersReady.Count >= MatchConfig.PlayersPerTeam;
+        _ctReady = _ctPlayersReady.Count >= MatchConfig.PlayersPerTeam;
 
-        player.PrintToChat($" {ChatColors.Green} You have been marked ready!");
+        player.PrintToChat($" {ChatColors.Green}You have been marked ready!");
 
-        Server.PrintToChatAll($@" {ChatColors.Green}Players ready
-                {ChatColors.DarkRed}{team1PlayersReady.Count + team2PlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");
+        Server.PrintToChatAll(
+            $" {ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.PlayersPerTeam * 2}");
 
-
-        if (team1Ready && team2Ready)
+        if (!_tReady || !_ctReady)
         {
-            Server.PrintToChatAll($" {ChatColors.Green} All players are ready! Starting match!");
-            if (MatchConfig.knifeRound)
-            {
-                StateMachine.SwitchState(GameState.Knife);
-            }
-            else
-            {
-                StateMachine.SwitchState(GameState.Live);
-            }
+            // not all players are ready yet, nothing to do here
+            return;
         }
+
+        Server.PrintToChatAll($" {ChatColors.Green}All players are ready! Starting match!");
+        StateMachine.SwitchState(MatchConfig.KnifeRound ? GameState.Knife : GameState.Live);
     }
 
     private void OnPlayerUnReady(int userid)
     {
-        if (team1PlayersReady.Contains(userid))
+        if (_tPlayersReady.Contains(userid))
         {
-            team1PlayersReady.Remove(userid);
-            team1Ready = false;
+            _tPlayersReady.Remove(userid);
+            _tReady = false;
         }
 
-        if (team2PlayersReady.Contains(userid))
+        if (_ctPlayersReady.Contains(userid))
         {
-            team2PlayersReady.Remove(userid);
-            team2Ready = false;
+            _ctPlayersReady.Remove(userid);
+            _ctReady = false;
         }
 
         var player = Utilities.GetPlayerFromUserid(userid);
         if (player != null)
         {
-            player.PrintToChat($" {ChatColors.Green} You have been marked unready!");
+            player.PrintToChat($" {ChatColors.Green}You have been marked unready!");
         }
 
-        Server.PrintToChatAll($@" {ChatColors.Green}Players ready
-                {ChatColors.DarkRed}{team1PlayersReady.Count + team2PlayersReady.Count}/{MatchConfig.playersPerTeam * 2}");
+        Server.PrintToChatAll(
+            $" {ChatColors.Green}Players ready {ChatColors.DarkRed}{_tPlayersReady.Count + _ctPlayersReady.Count}/{MatchConfig.PlayersPerTeam * 2}");
     }
 
-    private void OnForceReady()
+    private static void OnForceReady()
     {
-        Server.PrintToChatAll($" {ChatColors.Green} ForceStart! Starting match!");
-        if (MatchConfig.knifeRound)
-        {
-            StateMachine.SwitchState(GameState.Knife);
-        }
-        else
-        {
-            StateMachine.SwitchState(GameState.Live);
-        }
+        Server.PrintToChatAll($" {ChatColors.Green}Forced ready! Starting match!");
+        StateMachine.SwitchState(MatchConfig.KnifeRound ? GameState.Knife : GameState.Live);
     }
 
     // Used for testing
-    private void OnBotCt(int userid)
+    private static void OnBotCt(int _)
     {
         Server.ExecuteCommand("bot_add_ct");
     }

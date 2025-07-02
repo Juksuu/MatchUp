@@ -4,39 +4,37 @@ using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Menu;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace MatchUp;
+namespace MatchUp.states;
 
 public class LiveState : BaseState
 {
+    private bool _tPause;
+    private bool _ctPause;
 
-    private bool team1Pause = false;
-    private bool team2Pause = false;
+    private ConVar? _lastBackupConVar;
+    private string? _lastRoundPlayedBackupFile;
 
-    private ConVar? lastBackupConVar = null;
-    private string? lastRoundPlayedBackupFile = null;
-
-    public LiveState() : base()
+    public LiveState()
     {
-        commandActions["pause"] = (userid, args) => OnPlayerPause(userid);
-        commandActions["unpause"] = (userid, args) => OnPlayerUnpause(userid);
-        commandActions["backup"] = (userid, args) => OnPlayerBackup(userid);
+        CommandActions["pause"] = (userid, _) => OnPlayerPause(userid);
+        CommandActions["unpause"] = (userid, _) => OnPlayerUnpause(userid);
+        CommandActions["backup"] = (userid, _) => OnPlayerBackup(userid);
 
         // Used for testing
-        commandActions["kill"] = (userid, args) => OnPlayerSuicide(userid);
-        commandActions["bot_ct"] = (userid, args) => OnBotCt(userid);
+        CommandActions["kill"] = (userid, _) => OnPlayerSuicide(userid);
+        CommandActions["bot_ct"] = (userid, _) => OnBotCt(userid);
     }
 
     public override void Enter(GameState oldState)
     {
         Console.WriteLine("Switched to Live state");
-
-
+        
         Console.WriteLine("Executing Live cfg");
         Server.ExecuteCommand("exec MatchUp/live.cfg");
 
         Server.ExecuteCommand("mp_restartgame 3");
 
-        lastBackupConVar = ConVar.Find("mp_backup_round_file_last");
+        _lastBackupConVar = ConVar.Find("mp_backup_round_file_last");
 
         Utils.DelayedCall(TimeSpan.FromSeconds(4), () =>
         {
@@ -44,28 +42,28 @@ public class LiveState : BaseState
             Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
             Server.PrintToChatAll($" {ChatColors.Green}LIVE!");
 
-            CSTVManager.startDemoRecording();
+            CstvManager.StartDemoRecording();
         });
     }
 
     public override void Leave()
     {
-        team1Pause = false;
-        team2Pause = false;
-        lastRoundPlayedBackupFile = null;
-        lastBackupConVar = null;
+        _tPause = false;
+        _ctPause = false;
+        _lastRoundPlayedBackupFile = null;
+        _lastBackupConVar = null;
     }
 
     public override void OnMatchEnd(EventCsWinPanelMatch @event)
     {
         var delay = 15;
-        delay += CSTVManager.getTvDelay();
+        delay += CstvManager.GetTvDelay();
 
         Console.WriteLine($"Waiting for match end panel and cstv delay {delay}");
 
         Utils.DelayedCall(TimeSpan.FromSeconds(delay), () =>
         {
-            CSTVManager.stopDemoRecording();
+            CstvManager.StopDemoRecording();
 
             StateMachine.SwitchState(GameState.Loading);
             Server.ExecuteCommand($"changelevel {Server.MapName}");
@@ -80,24 +78,24 @@ public class LiveState : BaseState
             return;
         }
 
-        var paused = team1Pause || team2Pause;
-
+        var paused = _tPause || _ctPause;
         if (paused)
         {
-            player.PrintToChat($" {ChatColors.Green} Game is already paused!");
+            player.PrintToChat($" {ChatColors.Green}Game is already paused!");
             return;
         }
 
-        team1Pause = true;
-        team2Pause = true;
+        _tPause = true;
+        _ctPause = true;
 
-        if (player.TeamNum == (byte)CsTeam.Terrorist)
+        switch (player.TeamNum)
         {
-            Server.PrintToChatAll($" {ChatColors.Green} Terrorists have paused the game!");
-        }
-        else if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
-        {
-            Server.PrintToChatAll($" {ChatColors.Green} Counter-Terrorists have paused the game!");
+            case (byte)CsTeam.Terrorist:
+                Server.PrintToChatAll($" {ChatColors.Green}Terrorists have paused the game!");
+                break;
+            case (byte)CsTeam.CounterTerrorist:
+                Server.PrintToChatAll($" {ChatColors.Green}Counter-Terrorists have paused the game!");
+                break;
         }
 
         Server.ExecuteCommand("mp_pause_match");
@@ -111,33 +109,25 @@ public class LiveState : BaseState
             return;
         }
 
-        if (player.TeamNum == (byte)CsTeam.Terrorist)
+        switch (player.TeamNum)
         {
-            if (!team1Pause)
-            {
-                player.PrintToChat($" {ChatColors.Green} Your team already unpaused!");
-            }
-            else
-            {
-                team1Pause = false;
-                Server.PrintToChatAll($" {ChatColors.Green} Terrorists have unpaused the game!");
-            }
+            case (byte)CsTeam.Terrorist when !_tPause:
+                player.PrintToChat($" {ChatColors.Green}Your team already unpaused!");
+                break;
+            case (byte)CsTeam.Terrorist:
+                _tPause = false;
+                Server.PrintToChatAll($" {ChatColors.Green}Terrorists have unpaused the game!");
+                break;
+            case (byte)CsTeam.CounterTerrorist when !_ctPause:
+                player.PrintToChat($" {ChatColors.Green}Your team already unpaused!");
+                break;
+            case (byte)CsTeam.CounterTerrorist:
+                _ctPause = false;
+                Server.PrintToChatAll($" {ChatColors.Green}Counter-Terrorists have unpaused the game!");
+                break;
         }
-        else if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
-        {
-            if (!team2Pause)
-            {
-                player.PrintToChat($" {ChatColors.Green} Your team already unpaused!");
-            }
-            else
-            {
-                team2Pause = false;
-                Server.PrintToChatAll($" {ChatColors.Green} Counter-Terrorists have unpaused the game!");
-            }
-        }
-
-
-        if (!team1Pause && !team2Pause)
+        
+        if (!_tPause && !_ctPause)
         {
             Server.ExecuteCommand("mp_unpause_match");
         }
@@ -151,71 +141,70 @@ public class LiveState : BaseState
             return;
         }
 
-        var paused = team1Pause || team2Pause;
-        if (paused)
-        {
-            var backupFileName = lastRoundPlayedBackupFile;
-            if (lastBackupConVar != null && lastBackupConVar.StringValue != null && lastBackupConVar.StringValue != "")
-            {
-                backupFileName = lastBackupConVar.StringValue;
-                lastRoundPlayedBackupFile = lastBackupConVar.StringValue;
-            }
-
-            if (backupFileName != null)
-            {
-                Action<CCSPlayerController, ChatMenuOption> backupHandle =
-                    (CCSPlayerController player, ChatMenuOption option) =>
-                    OnPlayerSelectBackup(player, option.Text);
-
-                var backupSelection = new ChatMenu("Backup selection");
-
-                var lastRound = int.Parse(string.Concat(backupFileName.SkipLast(4).TakeLast(2)));
-                player.PrintToChat($"Last backup file {lastRound}");
-
-                for (var i = 0; i <= lastRound; i++)
-                {
-                    var roundNumberString = i < 10 ? $"0{i}" : $"{i}";
-                    backupSelection.AddMenuOption($"round {roundNumberString}", backupHandle);
-                }
-
-                MenuManager.OpenChatMenu(player, backupSelection);
-            }
-            else
-            {
-                player.PrintToChat($" {ChatColors.Red} Could not load backup data");
-            }
-        }
-        else
+        var paused = _tPause || _ctPause;
+        if (!paused)
         {
             player.PrintToChat($" {ChatColors.Red} Game needs to be paused to use backups");
+            return;
         }
+
+        var backupFileName = _lastRoundPlayedBackupFile;
+        if (_lastBackupConVar != null && !string.IsNullOrEmpty(_lastBackupConVar.StringValue))
+        {
+            backupFileName = _lastBackupConVar.StringValue;
+            _lastRoundPlayedBackupFile = _lastBackupConVar.StringValue;
+        }
+
+        if (backupFileName == null)
+        {
+            player.PrintToChat($" {ChatColors.Red} Could not load backup data");
+            return;
+        }
+
+        Action<CCSPlayerController, ChatMenuOption> backupHandle = (actionPlayer, option) =>
+            OnPlayerSelectBackup(actionPlayer, option.Text);
+
+        var backupSelection = new ChatMenu("Backup selection");
+        var lastRound = int.Parse(string.Concat(backupFileName.SkipLast(4).TakeLast(2)));
+        player.PrintToChat($"Last backup file {lastRound}");
+        for (var i = 0; i <= lastRound; i++)
+        {
+            var roundNumberString = i < 10 ? $"0{i}" : $"{i}";
+            backupSelection.AddMenuOption($"round {roundNumberString}", backupHandle);
+        }
+
+        MenuManager.OpenChatMenu(player, backupSelection);
     }
 
     private void OnPlayerSelectBackup(CCSPlayerController player, string selection)
     {
-        if (lastRoundPlayedBackupFile != null)
+        if (_lastRoundPlayedBackupFile == null)
         {
-            var round = selection.Split(" ")[1];
-            var backupFileName = string.Concat(lastRoundPlayedBackupFile.SkipLast(6)) + $"{round}.txt";
-            player.PrintToChat($"Restoring previous state using backup file {backupFileName}");
-
-            Server.ExecuteCommand($"mp_backup_restore_load_file {backupFileName}");
+            return;
         }
+
+        var round = selection.Split(" ")[1];
+        var backupFileName = string.Concat(_lastRoundPlayedBackupFile.SkipLast(6)) + $"{round}.txt";
+        player.PrintToChat($"Restoring previous state using backup file {backupFileName}");
+
+        Server.ExecuteCommand($"mp_backup_restore_load_file {backupFileName}");
     }
 
     // Used for testing
-    private void OnPlayerSuicide(int userid)
+    private static void OnPlayerSuicide(int userid)
     {
         var player = Utilities.GetPlayerFromUserid(userid);
 
         if (player == null || !player.IsValid || player.PlayerPawn.Value == null || !player.PlayerPawn.IsValid)
+        {
             return;
+        }
 
         player.PlayerPawn.Value.CommitSuicide(true, false);
     }
 
     // Used for testing
-    private void OnBotCt(int userid)
+    private static void OnBotCt(int _)
     {
         Server.ExecuteCommand("bot_add_ct");
     }

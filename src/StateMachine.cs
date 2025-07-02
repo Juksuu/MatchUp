@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using MatchUp.states;
 
 namespace MatchUp;
 
@@ -6,7 +7,7 @@ public enum GameState
 {
     Loading,
     Setup,
-    Readyup,
+    ReadyUp,
     Knife,
     Live,
     End
@@ -14,7 +15,7 @@ public enum GameState
 
 public abstract class BaseState
 {
-    protected Dictionary<string, Action<int, string[]?>> commandActions = new Dictionary<string, Action<int, string[]?>>();
+    protected readonly Dictionary<string, Action<int, string[]?>> CommandActions = new();
 
     public abstract void Enter(GameState oldState);
     public abstract void Leave();
@@ -22,41 +23,44 @@ public abstract class BaseState
     public virtual void OnMapStart() { }
 
     public virtual void OnPlayerTeam(EventPlayerTeam @event) { }
+
     public virtual void OnPlayerConnect(EventPlayerConnectFull @event) { }
+
     public virtual void OnMatchEnd(EventCsWinPanelMatch @event) { }
+
     public virtual void OnRoundEnd(EventRoundEnd @event) { }
 
     public virtual void OnChatCommand(int userid, string command, string[]? args = null)
     {
-        if (commandActions.ContainsKey(command))
+        if (CommandActions.TryGetValue(command, out var action))
         {
-            commandActions[command](userid, args);
+            action(userid, args);
         }
     }
-
 }
 
 public static class StateMachine
 {
-    private static GameState currentGameState;
-    private static Dictionary<GameState, BaseState> gameStates = new Dictionary<GameState, BaseState>() {
+    private static GameState _currentGameState;
+    private static readonly Dictionary<GameState, BaseState> GameStates = new()
+    {
         { GameState.Loading, new LoadingState() },
         { GameState.Setup, new SetupState() },
-        { GameState.Readyup, new ReadyUpState() },
+        { GameState.ReadyUp, new ReadyUpState() },
         { GameState.Live, new LiveState() },
         { GameState.Knife, new KnifeState() },
     };
 
     public static void SwitchState(GameState state)
     {
-        gameStates[currentGameState].Leave();
-        gameStates[state].Enter(currentGameState);
+        GameStates[_currentGameState].Leave();
+        GameStates[state].Enter(_currentGameState);
 
-        currentGameState = state;
+        _currentGameState = state;
     }
 
-    public static BaseState getCurrentState()
+    public static BaseState GetCurrentState()
     {
-        return gameStates[currentGameState];
+        return GameStates[_currentGameState];
     }
 }

@@ -1,4 +1,4 @@
-namespace MatchUp;
+namespace MatchUp.states;
 
 public class LoadingState : BaseState
 {
@@ -6,17 +6,14 @@ public class LoadingState : BaseState
     {
         Console.WriteLine("Switched to Loading state");
 
-        MatchConfig.loadMaps();
-        MatchConfig.loadSettings();
+        MatchConfig.LoadMaps();
+        MatchConfig.LoadSettings();
     }
 
     public override void Leave() { }
 
     public override void OnMapStart()
     {
-        Utils.DelayedCall(TimeSpan.FromSeconds(1), () =>
-        {
-            StateMachine.SwitchState(GameState.Setup);
-        });
+        Utils.DelayedCall(TimeSpan.FromSeconds(1), () => { StateMachine.SwitchState(GameState.Setup); });
     }
 }

@@ -2,49 +2,48 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Modules.Cvars;
 
 namespace MatchUp;
-public static class CSTVManager
+
+public static class CstvManager
 {
+    private static readonly bool IsTvEnabled = GetTvEnabled();
 
-    static bool isTvEnabled = getTvEnabled();
-
-    public static int getTvDelay()
+    public static int GetTvDelay()
     {
-        if (isTvEnabled)
+        if (!IsTvEnabled)
         {
-            // TODO: Test which delay should be used here, tv_delay or tv_delay1
-            var tvDelayCvar = ConVar.Find("tv_delay");
-            if (tvDelayCvar != null)
-            {
-                return tvDelayCvar.GetPrimitiveValue<int>();
-            }
+            return 0;
         }
 
-        return 0;
+        // TODO: Test which delay should be used here, tv_delay or tv_delay1
+        var tvDelayCvar = ConVar.Find("tv_delay");
+        return tvDelayCvar?.GetPrimitiveValue<int>() ?? 0;
     }
 
-    public static void startDemoRecording()
+    public static void StartDemoRecording()
     {
-        if (isTvEnabled)
+        if (!IsTvEnabled)
         {
-            var delay = getTvDelay();
-            Utils.DelayedCall(TimeSpan.FromSeconds(delay), () =>
-            {
-                string formattedTime = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
-                string demoName = $"{formattedTime}-{Server.MapName}";
-                Server.ExecuteCommand($"tv_record {demoName}");
-            });
+            return;
         }
+
+        var delay = GetTvDelay();
+        Utils.DelayedCall(TimeSpan.FromSeconds(delay), () =>
+        {
+            var formattedTime = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+            var demoName = $"{formattedTime}-{Server.MapName}";
+            Server.ExecuteCommand($"tv_record {demoName}");
+        });
     }
 
-    public static void stopDemoRecording()
+    public static void StopDemoRecording()
     {
-        if (isTvEnabled)
+        if (IsTvEnabled)
         {
             Server.ExecuteCommand("tv_stoprecord");
         }
     }
 
-    private static bool getTvEnabled()
+    private static bool GetTvEnabled()
     {
         var tvEnableCVar = ConVar.Find("tv_enable");
         return tvEnableCVar != null && tvEnableCVar.GetPrimitiveValue<bool>();
