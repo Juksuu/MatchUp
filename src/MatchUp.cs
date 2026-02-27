@@ -153,7 +153,14 @@ public class MatchUp : BasePlugin
         Utils.DelayedCall(TimeSpan.FromSeconds(1), () =>
         {
             StateMachine.SwitchState(GameState.Loading);
-            Server.ExecuteCommand($"changelevel {Server.MapName}");
+            if (!string.IsNullOrEmpty(MatchConfig.Map.WorkshopId))
+            {
+                Server.ExecuteCommand($"host_workshop_map {MatchConfig.Map.WorkshopId}");
+            }
+            else
+            {
+                Server.ExecuteCommand($"changelevel {MatchConfig.Map.Name}");
+            }
         });
     }
 }

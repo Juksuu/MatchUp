@@ -48,7 +48,7 @@ public class SetupState : BaseState
 
         foreach (var map in MatchConfig.MapPool)
         {
-            mapSelection.AddMenuOption(map, mapChangeHandle);
+            mapSelection.AddMenuOption(map.Name, mapChangeHandle);
         }
 
         MenuManager.OpenChatMenu(player, mapSelection);
