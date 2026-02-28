@@ -1,9 +1,0 @@
-{
-    "lspconfig": {
-        "omnisharp": {
-            "cmd": [
-                "OmniSharp"
-            ]
-        }
-    }
-}
