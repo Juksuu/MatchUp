@@ -4,17 +4,31 @@ using CounterStrikeSharp.API.Modules.Utils;
 
 namespace MatchUp;
 
+public class MapInfo
+{
+    public required string Name { get; set; }
+    public string? WorkshopId { get; set; }
+}
+
 public static class MatchConfig
 {
     public static int PlayersPerTeam { get; private set; } = 5;
     public static bool KnifeRound { get; private set; } = true;
-    public static string[] MapPool { get; private set; } = [];
+    public static MapInfo[] MapPool { get; private set; } = [];
     public static Dictionary<string, string> Settings { get; } = new();
 
-    private static string _map = "de_mirage";
+    public static MapInfo Map = new() { Name = "de_mirage" };
 
-    private static readonly string[] DefaultMapPool =
-        ["de_ancient", "de_anubis", "de_dust2", "de_inferno", "de_mirage", "de_nuke", "de_train"];
+    private static readonly MapInfo[] DefaultMapPool =
+    [
+        new() { Name = "de_ancient" },
+        new() { Name = "de_anubis" },
+        new() { Name = "de_dust2" },
+        new() { Name = "de_inferno" },
+        new() { Name = "de_mirage" },
+        new() { Name = "de_nuke" },
+        new() { Name = "de_train" }
+    ];
 
     public static void LoadMaps()
     {
@@ -24,7 +38,8 @@ public static class MatchConfig
         if (envMaps != null)
         {
             Console.WriteLine("Using map pool from MATCHUP_MAPS env variable");
-            MapPool = envMaps.Split(",").Where(Server.IsMapValid).ToArray();
+            MapPool = envMaps.Split(",").Select(ParseMapString).ToArray();
+            InitializeCurrentMap();
             return;
         }
 
@@ -33,12 +48,47 @@ public static class MatchConfig
         {
             Console.WriteLine("Using map pool from maps.txt");
             var mapsRaw = File.ReadLines(mapFile);
-            MapPool = mapsRaw.Where(Server.IsMapValid).ToArray();
+            MapPool = mapsRaw.Where(l => !string.IsNullOrWhiteSpace(l)).Select(ParseMapString).ToArray();
+            InitializeCurrentMap();
             return;
         }
 
         Console.WriteLine("Using default map pool");
         MapPool = DefaultMapPool;
+        InitializeCurrentMap();
+    }
+
+    private static MapInfo ParseMapString(string mapString)
+    {
+        var parts = mapString.Split(';', 2, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (parts.Length == 2)
+        {
+            return new MapInfo { Name = parts[0], WorkshopId = parts[1] };
+        }
+        return new MapInfo { Name = parts[0] };
+    }
+
+    private static void InitializeCurrentMap()
+    {
+        // Try to find the current map in the pool to preserve workshop ID if applicable
+        var currentMapName = Server.MapName;
+
+        if (string.IsNullOrEmpty(currentMapName))
+        {
+            Map = new MapInfo { Name = "de_mirage" };
+            return;
+        }
+
+        var foundMap = MapPool?.FirstOrDefault(m => m != null && m.Name == currentMapName);
+
+        if (foundMap != null)
+        {
+            Map = foundMap;
+        }
+        else
+        {
+            Map = new MapInfo { Name = currentMapName };
+        }
     }
 
     public static void LoadSettings()
@@ -96,25 +146,33 @@ public static class MatchConfig
         Action<string> printMessage = player != null ? player.PrintToChat : Server.PrintToChatAll;
         // send the config messages
         printMessage($" {ChatColors.Green}Current config");
-        printMessage($" {ChatColors.Grey}Map: {ChatColors.Gold}{_map}");
+        printMessage($" {ChatColors.Grey}Map: {ChatColors.Gold}{Map.Name}");
         printMessage($" {ChatColors.Grey}Players per team: {ChatColors.Gold}{PlayersPerTeam}");
         printMessage($" {ChatColors.Grey}Knife round enabled: {ChatColors.Gold}{KnifeRound}");
     }
 
-    public static bool SetMap(string? map, CCSPlayerController? player = null)
+    public static bool SetMap(string? mapName, CCSPlayerController? player = null)
     {
-        if (map == null || !Server.IsMapValid(map))
+        if (mapName == null)
         {
             return false;
         }
 
-        Console.WriteLine($"Setting map to {map}");
-        if (player != null)
+        var foundMap = MapPool.FirstOrDefault(m => m.Name == mapName);
+        if (foundMap == null)
         {
-            player.PrintToChat($"Setting map to: {map}");
+            Map = new MapInfo { Name = mapName };
+        }
+        else
+        {
+            Map = foundMap;
         }
 
-        _map = map;
+        Console.WriteLine($"Setting map to {Map.Name}");
+        if (player != null)
+        {
+            player.PrintToChat($"Setting map to: {Map.Name}");
+        }
 
         return true;
     }
@@ -160,14 +218,23 @@ public static class MatchConfig
         Server.PrintToChatAll($" {ChatColors.Green}Setting up match with current config");
         Print();
 
-        if (Server.MapName == _map)
+        bool isCurrentMap = Server.MapName == Map.Name;
+
+        if (isCurrentMap)
         {
             Server.ExecuteCommand("mp_restartgame 1");
             StateMachine.SwitchState(GameState.ReadyUp);
         }
         else
         {
-            Server.ExecuteCommand($"changelevel {_map}");
+            if (!string.IsNullOrEmpty(Map.WorkshopId))
+            {
+                Server.ExecuteCommand($"host_workshop_map {Map.WorkshopId}");
+            }
+            else
+            {
+                Server.ExecuteCommand($"changelevel {Map.Name}");
+            }
         }
     }
 }

@@ -28,7 +28,7 @@ public class LiveState : BaseState
     public override void Enter(GameState oldState)
     {
         Console.WriteLine("Switched to Live state");
-        
+
         Console.WriteLine("Executing Live cfg");
         Server.ExecuteCommand("exec MatchUp/live.cfg");
 
@@ -66,7 +66,14 @@ public class LiveState : BaseState
             CstvManager.StopDemoRecording();
 
             StateMachine.SwitchState(GameState.Loading);
-            Server.ExecuteCommand($"changelevel {Server.MapName}");
+            if (!string.IsNullOrEmpty(MatchConfig.Map.WorkshopId))
+            {
+                Server.ExecuteCommand($"host_workshop_map {MatchConfig.Map.WorkshopId}");
+            }
+            else
+            {
+                Server.ExecuteCommand($"changelevel {MatchConfig.Map.Name}");
+            }
         });
     }
 
@@ -126,7 +133,7 @@ public class LiveState : BaseState
                 Server.PrintToChatAll($" {ChatColors.Green}Counter-Terrorists have unpaused the game!");
                 break;
         }
-        
+
         if (!_tPause && !_ctPause)
         {
             Server.ExecuteCommand("mp_unpause_match");
