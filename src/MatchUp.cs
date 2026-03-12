@@ -95,6 +95,9 @@ public class MatchUp : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerChat(EventPlayerChat @event, GameEventInfo info)
     {
+        // Echo chat messages to console as JSON for Discord bridge
+        EventBridge.OnChat(@event);
+
         if (!@event.Text.StartsWith('.') && !@event.Text.StartsWith('!'))
         {
             return HookResult.Continue;
@@ -135,6 +138,7 @@ public class MatchUp : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
+        EventBridge.OnPlayerTeam(@event);
         StateMachine.GetCurrentState().OnPlayerTeam(@event);
         return HookResult.Continue;
     }
@@ -142,7 +146,15 @@ public class MatchUp : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerConnect(EventPlayerConnectFull @event, GameEventInfo info)
     {
+        EventBridge.OnPlayerConnect(@event);
         StateMachine.GetCurrentState().OnPlayerConnect(@event);
+        return HookResult.Continue;
+    }
+
+    [GameEventHandler]
+    public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
+    {
+        EventBridge.OnPlayerDisconnect(@event);
         return HookResult.Continue;
     }
 
@@ -156,12 +168,14 @@ public class MatchUp : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
     {
+        EventBridge.OnRoundEnd(@event);
         StateMachine.GetCurrentState().OnRoundEnd(@event);
         return HookResult.Continue;
     }
 
     private static void OnReset()
     {
+        EventBridge.OnReset();
         Server.PrintToChatAll($" {ChatColors.Green}Resetting!!!");
 
         Utils.DelayedCall(TimeSpan.FromSeconds(1), () =>

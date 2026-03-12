@@ -106,6 +106,9 @@ public class LiveState : BaseState
         }
 
         Server.ExecuteCommand("mp_pause_match");
+
+        var side = player.TeamNum == (byte)CsTeam.Terrorist ? "T" : "CT";
+        EventBridge.OnPause(side);
     }
 
     private void OnPlayerUnpause(int userid)
@@ -137,6 +140,9 @@ public class LiveState : BaseState
         if (!_tPause && !_ctPause)
         {
             Server.ExecuteCommand("mp_unpause_match");
+
+            var side = player.TeamNum == (byte)CsTeam.Terrorist ? "T" : "CT";
+            EventBridge.OnUnpause(side);
         }
     }
 
@@ -195,6 +201,10 @@ public class LiveState : BaseState
         player.PrintToChat($"Restoring previous state using backup file {backupFileName}");
 
         Server.ExecuteCommand($"mp_backup_restore_load_file {backupFileName}");
+        if (int.TryParse(round, out var roundInt))
+        {
+            EventBridge.OnBackup(player.PlayerName, roundInt);
+        }
     }
 
     // Used for testing

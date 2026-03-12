@@ -19,6 +19,8 @@ public static class MatchConfig
 
     public static MapInfo Map = new() { Name = "de_mirage" };
 
+    public static bool EventBridgeEnabled { get; } = Utils.ParseBoolEnv("MATCHUP_EVENT_BRIDGE_ENABLED");
+
     private static readonly MapInfo[] DefaultMapPool =
     [
         new() { Name = "de_ancient" },

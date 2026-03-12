@@ -20,6 +20,19 @@ public static class Utils
         }
     }
 
+    public static bool ParseBoolEnv(string variableName)
+    {
+        var value = Environment.GetEnvironmentVariable(variableName);
+        if (string.IsNullOrEmpty(value)) return false;
+
+        return value.Trim() switch
+        {
+            "1" => true,
+            "0" => false,
+            _ => bool.TryParse(value, out var result) && result
+        };
+    }
+
     public static string? GetMatchStatusJson()
     {
         var gameState = StateMachine.GetCurrentGameState();
