@@ -8,11 +8,12 @@ namespace MatchUp;
 
 public static class Utils
 {
-    public static void DelayedCall(TimeSpan delay, Action action)
+    public static async void DelayedCall(TimeSpan delay, Action callback)
     {
         try
         {
-            Task.Delay(delay).ContinueWith(_ => action());
+            await Task.Delay(delay);
+            await Server.NextWorldUpdateAsync(callback);
         }
         catch (Exception e)
         {
