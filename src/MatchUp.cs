@@ -1,4 +1,4 @@
-﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
@@ -10,8 +10,10 @@ namespace MatchUp;
 
 public class MatchUp : BasePlugin
 {
+    public const string Version = "0.8.0";
+
     public override string ModuleName => "MatchUp";
-    public override string ModuleVersion => "0.8.0";
+    public override string ModuleVersion => Version;
 
     public override void Load(bool hotReload)
     {
@@ -41,7 +43,7 @@ public class MatchUp : BasePlugin
     [ConsoleCommand("matchup_map", "Set match map")]
     public void OnMapSet(CCSPlayerController? player, CommandInfo command)
     {
-        Console.WriteLine($"setting map with args: {command.GetCommandString}");
+        command.ReplyToCommand($"setting map with args: {command.GetCommandString}");
         MatchConfig.SetMap(command.GetArg(1));
     }
 
@@ -69,7 +71,7 @@ public class MatchUp : BasePlugin
         // only allow reconfiguring during the setup phase
         if (StateMachine.GetCurrentState().GetType() != typeof(SetupState))
         {
-            Console.WriteLine("Can only reconfigure during setup phase");
+            command.ReplyToCommand("Can only reconfigure during setup phase");
             return;
         }
 
