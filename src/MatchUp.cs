@@ -10,7 +10,7 @@ namespace MatchUp;
 
 public class MatchUp : BasePlugin
 {
-    public const string Version = "0.8.0";
+    public const string Version = "0.9.0";
 
     public override string ModuleName => "MatchUp";
     public override string ModuleVersion => Version;
