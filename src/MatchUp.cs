@@ -77,6 +77,12 @@ public class MatchUp : BasePlugin
         command.ReplyToCommand($"\n{Utils.GetMatchStatusJson() ?? "No match status available"}\n");
     }
 
+    [ConsoleCommand("matchup_demo", "Prints the demo recording and upload status")]
+    public void OnDemoStatus(CCSPlayerController? player, CommandInfo command)
+    {
+        Utils.PrintDemoStatus(command.ReplyToCommand);
+    }
+
     [ConsoleCommand("matchup_reconfigure", "Reloads the MatchUp configs")]
     public void OnReConfigure(CCSPlayerController? player, CommandInfo command)
     {

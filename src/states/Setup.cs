@@ -63,12 +63,11 @@ public class SetupState : BaseState
             return;
         }
 
-        player.PrintToChat($" {ChatColors.Yellow}Commands:");
-        player.PrintToChat($" {ChatColors.Green}!map {ChatColors.Default}select map for match");
-        player.PrintToChat($" {ChatColors.Green}!start {ChatColors.Default}start match with current config");
+        player.PrintToChat($" {ChatColors.Yellow}MatchUp Commands:");
         player.PrintToChat($" {ChatColors.Green}!config {ChatColors.Default}print current match config");
         player.PrintToChat($" {ChatColors.Green}!team_size <number> {ChatColors.Default}set team size for match");
         player.PrintToChat($" {ChatColors.Green}!knife <boolean> {ChatColors.Default}set knife round for match");
+        player.PrintToChat($" {ChatColors.Green}!demo {ChatColors.Default}show demo recording & upload status");
     }
 
     private static void OnVersion(int userid)
@@ -80,6 +79,17 @@ public class SetupState : BaseState
         }
 
         player.PrintToChat($" {ChatColors.Green}MatchUp version {MatchUp.Version}");
+    }
+
+    private static void OnDemo(int userid)
+    {
+        var player = Utilities.GetPlayerFromUserid(userid);
+        if (player == null)
+        {
+            return;
+        }
+
+        Utils.PrintDemoStatus(player.PrintToChat);
     }
 
     private static void OnTeamSize(int userid, string[]? args)

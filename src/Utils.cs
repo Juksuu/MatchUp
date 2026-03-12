@@ -33,6 +33,38 @@ public static class Utils
         };
     }
 
+    public static void PrintDemoStatus(Action<string> printMessage)
+    {
+        printMessage($" {ChatColors.Yellow}Demo status:");
+
+        // HLTV recording
+        var tvEnabled = CstvManager.IsTvEnabled;
+        var tvColor = tvEnabled ? ChatColors.Green : ChatColors.LightRed;
+        printMessage($" {ChatColors.Grey}HLTV recording: {tvColor}{tvEnabled}");
+
+        // TV delay
+        var delay = CstvManager.GetTvDelay();
+        printMessage($" {ChatColors.Grey}TV delay: {ChatColors.Gold}{delay}s");
+
+        // Upload status
+        if (!MatchConfig.DemoUploadEnabled)
+        {
+            printMessage($" {ChatColors.Grey}Demo upload: {ChatColors.LightRed}False");
+        }
+        else if (string.IsNullOrEmpty(MatchConfig.DemoUploadUrl))
+        {
+            printMessage($" {ChatColors.Grey}Demo upload: {ChatColors.LightRed}Error {ChatColors.Grey}(missing MATCHUP_DEMO_UPLOAD_URL)");
+        }
+        else if (string.IsNullOrEmpty(MatchConfig.DemoUploadToken))
+        {
+            printMessage($" {ChatColors.Grey}Demo upload: {ChatColors.LightRed}Error {ChatColors.Grey}(missing MATCHUP_DEMO_UPLOAD_TOKEN)");
+        }
+        else
+        {
+            printMessage($" {ChatColors.Grey}Demo upload: {ChatColors.Green}True");
+        }
+    }
+
     public static string? GetMatchStatusJson()
     {
         var gameState = StateMachine.GetCurrentGameState();
