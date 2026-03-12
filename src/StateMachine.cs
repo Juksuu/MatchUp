@@ -53,14 +53,21 @@ public static class StateMachine
 
     public static void SwitchState(GameState state)
     {
+        var oldState = _currentGameState;
         GameStates[_currentGameState].Leave();
         GameStates[state].Enter(_currentGameState);
 
         _currentGameState = state;
+        EventBridge.OnStateChange(oldState, _currentGameState);
     }
 
     public static BaseState GetCurrentState()
     {
         return GameStates[_currentGameState];
+    }
+
+    public static GameState GetCurrentGameState()
+    {
+        return _currentGameState;
     }
 }

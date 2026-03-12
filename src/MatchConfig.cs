@@ -19,6 +19,13 @@ public static class MatchConfig
 
     public static MapInfo Map = new() { Name = "de_mirage" };
 
+    public static bool DemoUploadEnabled { get; } = Utils.ParseBoolEnv("MATCHUP_DEMO_UPLOAD_ENABLED");
+    public static string? DemoUploadUrl { get; } = Environment.GetEnvironmentVariable("MATCHUP_DEMO_UPLOAD_URL")?.TrimEnd('/');
+    public static string? DemoUploadToken { get; } =
+        Environment.GetEnvironmentVariable("MATCHUP_DEMO_UPLOAD_TOKEN")?.TrimStart('?');
+
+    public static bool EventBridgeEnabled { get; } = Utils.ParseBoolEnv("MATCHUP_EVENT_BRIDGE_ENABLED");
+
     private static readonly MapInfo[] DefaultMapPool =
     [
         new() { Name = "de_ancient" },

@@ -15,6 +15,8 @@ public class SetupState : BaseState
         CommandActions["config"] = (userid, _) => MatchConfig.Print(userid);
         CommandActions["start"] = (_, _) => MatchConfig.StartMatch();
         CommandActions["help"] = (userid, _) => OnHelp(userid);
+        CommandActions["version"] = (userid, _) => OnVersion(userid);
+        CommandActions["demo"] = (userid, _) => OnDemo(userid);
     }
 
 
@@ -62,12 +64,34 @@ public class SetupState : BaseState
             return;
         }
 
-        player.PrintToChat($" {ChatColors.Yellow}Commands:");
+        player.PrintToChat($" {ChatColors.Yellow}MatchUp Commands:");
         player.PrintToChat($" {ChatColors.Green}!map {ChatColors.Default}select map for match");
         player.PrintToChat($" {ChatColors.Green}!start {ChatColors.Default}start match with current config");
         player.PrintToChat($" {ChatColors.Green}!config {ChatColors.Default}print current match config");
         player.PrintToChat($" {ChatColors.Green}!team_size <number> {ChatColors.Default}set team size for match");
         player.PrintToChat($" {ChatColors.Green}!knife <boolean> {ChatColors.Default}set knife round for match");
+    }
+
+    private static void OnVersion(int userid)
+    {
+        var player = Utilities.GetPlayerFromUserid(userid);
+        if (player == null)
+        {
+            return;
+        }
+
+        player.PrintToChat($" {ChatColors.Green}MatchUp version {MatchUp.Version}");
+    }
+
+    private static void OnDemo(int userid)
+    {
+        var player = Utilities.GetPlayerFromUserid(userid);
+        if (player == null)
+        {
+            return;
+        }
+
+        Utils.PrintDemoStatus(player.PrintToChat);
     }
 
     private static void OnTeamSize(int userid, string[]? args)
