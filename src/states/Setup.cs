@@ -15,6 +15,7 @@ public class SetupState : BaseState
         CommandActions["config"] = (userid, _) => MatchConfig.Print(userid);
         CommandActions["start"] = (_, _) => MatchConfig.StartMatch();
         CommandActions["help"] = (userid, _) => OnHelp(userid);
+        CommandActions["version"] = (userid, _) => OnVersion(userid);
     }
 
 
@@ -68,6 +69,17 @@ public class SetupState : BaseState
         player.PrintToChat($" {ChatColors.Green}!config {ChatColors.Default}print current match config");
         player.PrintToChat($" {ChatColors.Green}!team_size <number> {ChatColors.Default}set team size for match");
         player.PrintToChat($" {ChatColors.Green}!knife <boolean> {ChatColors.Default}set knife round for match");
+    }
+
+    private static void OnVersion(int userid)
+    {
+        var player = Utilities.GetPlayerFromUserid(userid);
+        if (player == null)
+        {
+            return;
+        }
+
+        player.PrintToChat($" {ChatColors.Green}MatchUp version {MatchUp.Version}");
     }
 
     private static void OnTeamSize(int userid, string[]? args)

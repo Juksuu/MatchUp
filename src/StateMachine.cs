@@ -63,4 +63,9 @@ public static class StateMachine
     {
         return GameStates[_currentGameState];
     }
+
+    public static GameState GetCurrentGameState()
+    {
+        return _currentGameState;
+    }
 }

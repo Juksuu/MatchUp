@@ -65,6 +65,18 @@ public class MatchUp : BasePlugin
         MatchConfig.StartMatch();
     }
 
+    [ConsoleCommand("matchup_version", "Prints the current version of MatchUp")]
+    public void OnVersion(CCSPlayerController? player, CommandInfo command)
+    {
+        command.ReplyToCommand($"MatchUp version {ModuleVersion}");
+    }
+
+    [ConsoleCommand("matchup_status", "Prints match status as JSON")]
+    public void OnMatchStatus(CCSPlayerController? player, CommandInfo command)
+    {
+        command.ReplyToCommand($"\n{Utils.GetMatchStatusJson() ?? "No match status available"}\n");
+    }
+
     [ConsoleCommand("matchup_reconfigure", "Reloads the MatchUp configs")]
     public void OnReConfigure(CCSPlayerController? player, CommandInfo command)
     {
