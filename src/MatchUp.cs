@@ -131,6 +131,17 @@ public class MatchUp : BasePlugin
             OnReset();
             return HookResult.Continue;
         }
+        if (command == "cancelmatch")
+        {
+            OnCancelMatch(@event.Userid, player);
+            return HookResult.Continue;
+        }
+
+        if (command == "confirmcancel")
+        {
+            OnConfirmCancel(@event.Userid, player);
+            return HookResult.Continue;
+        }
 
         var state = StateMachine.GetCurrentState();
 
@@ -204,5 +215,29 @@ public class MatchUp : BasePlugin
                 Server.ExecuteCommand($"changelevel {MatchConfig.Map.Name}");
             }
         });
+    }
+
+    private static void OnCancelMatch(int userid, CCSPlayerController player)
+    {
+    if (PelipajaConfig.OwnerSteamId == null || player.SteamID.ToString() != PelipajaConfig.OwnerSteamId)
+    {
+        player.PrintToChat($" {ChatColors.Red}You are not the match owner!");
+        return;
+    }
+
+    player.PrintToChat($" {ChatColors.Red}Are you sure you want to cancel the match?");
+    player.PrintToChat($" {ChatColors.Red}Type !confirmcancel to confirm.");
+    }
+
+    private static void OnConfirmCancel(int userid, CCSPlayerController player)
+    {
+        if (PelipajaConfig.OwnerSteamId == null || player.SteamID.ToString() != PelipajaConfig.OwnerSteamId)
+        {
+            player.PrintToChat($" {ChatColors.Red}You are not the match owner!");
+            return;
+        }
+
+        Server.PrintToChatAll($" {ChatColors.Red}Match cancelled by {player.PlayerName}!");
+        _ = WebhookClient.PostStatus("cancelled");
     }
 }

@@ -79,6 +79,7 @@ public static class HttpServer
             PelipajaConfig.SetMatchConfig(
                 payload.Mode,
                 payload.MatchId ?? "",
+                payload.OwnerSteamId,
                 payload.Team1 ?? new TeamInfo { Name = "Team 1" },
                 payload.Team2 ?? new TeamInfo { Name = "Team 2" }
             );
@@ -111,4 +112,5 @@ public class MatchConfigPayload
     public bool KnifeRound { get; set; } = true;
     public TeamInfo? Team1 { get; set; }
     public TeamInfo? Team2 { get; set; }
+    public string? OwnerSteamId { get; set; }
 }
