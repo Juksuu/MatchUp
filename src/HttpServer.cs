@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text.Json;
+using CounterStrikeSharp.API;
 
 namespace MatchUp;
 
@@ -71,10 +72,24 @@ public static class HttpServer
                 PropertyNameCaseInsensitive = true
             });
 
-            if (payload != null)
-            {
-                Console.WriteLine($"[Pelipaja] Config received for match {payload.MatchId}");
-            }
+        if (payload != null)
+        {
+            Console.WriteLine($"[Pelipaja] Config received for match {payload.MatchId}");
+
+            PelipajaConfig.SetMatchConfig(
+                payload.Mode,
+                payload.MatchId ?? "",
+                payload.Team1 ?? new TeamInfo { Name = "Team 1" },
+                payload.Team2 ?? new TeamInfo { Name = "Team 2" }
+            );
+
+            Server.NextWorldUpdate(() => {
+                MatchConfig.SetMap(payload.Map);
+                MatchConfig.SetTeamSize(payload.TeamSize.ToString());
+                MatchConfig.SetKnife(payload.KnifeRound.ToString());
+                MatchConfig.StartMatch();
+            });
+        }
             res.StatusCode = 200;
         }
         else
@@ -92,8 +107,8 @@ public class MatchConfigPayload
     public string Mode { get; set; } = "manual";
     public string? MatchId { get; set; }
     public string? Map { get; set; }
-    public bool KnifeRound { get; set; } = true;
     public int TeamSize { get; set; } = 5;
+    public bool KnifeRound { get; set; } = true;
     public TeamInfo? Team1 { get; set; }
     public TeamInfo? Team2 { get; set; }
 }
