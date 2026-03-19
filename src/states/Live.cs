@@ -56,6 +56,24 @@ public class LiveState : BaseState
 
     public override void OnMatchEnd(EventCsWinPanelMatch @event)
     {
+        // Get final scores for demo filename
+        var teamEntities = Utilities.FindAllEntitiesByDesignerName<CCSTeam>("cs_team_manager");
+        var ctScore = 0;
+        var tScore = 0;
+        foreach (var team in teamEntities)
+        {
+            if (team.TeamNum == (byte)CsTeam.CounterTerrorist)
+                ctScore = team.Score;
+            else if (team.TeamNum == (byte)CsTeam.Terrorist)
+                tScore = team.Score;
+        }
+
+        var winnerScore = Math.Max(ctScore, tScore);
+        var loserScore = Math.Min(ctScore, tScore);
+        var scores = $"[{winnerScore}-{loserScore}]";
+
+        EventBridge.OnMatchEnd(@event, ctScore, tScore);
+
         var delay = 15;
         delay += CstvManager.GetTvDelay();
 
@@ -63,7 +81,7 @@ public class LiveState : BaseState
 
         Utils.DelayedCall(TimeSpan.FromSeconds(delay), () =>
         {
-            CstvManager.StopDemoRecording();
+            CstvManager.StopDemoRecording(scores);
 
             StateMachine.SwitchState(GameState.Loading);
             if (!string.IsNullOrEmpty(MatchConfig.Map.WorkshopId))
@@ -106,6 +124,9 @@ public class LiveState : BaseState
         }
 
         Server.ExecuteCommand("mp_pause_match");
+
+        var side = player.TeamNum == (byte)CsTeam.Terrorist ? "T" : "CT";
+        EventBridge.OnPause(side);
     }
 
     private void OnPlayerUnpause(int userid)
@@ -137,6 +158,9 @@ public class LiveState : BaseState
         if (!_tPause && !_ctPause)
         {
             Server.ExecuteCommand("mp_unpause_match");
+
+            var side = player.TeamNum == (byte)CsTeam.Terrorist ? "T" : "CT";
+            EventBridge.OnUnpause(side);
         }
     }
 
@@ -195,6 +219,10 @@ public class LiveState : BaseState
         player.PrintToChat($"Restoring previous state using backup file {backupFileName}");
 
         Server.ExecuteCommand($"mp_backup_restore_load_file {backupFileName}");
+        if (int.TryParse(round, out var roundInt))
+        {
+            EventBridge.OnBackup(player.PlayerName, roundInt);
+        }
     }
 
     // Used for testing
