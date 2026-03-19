@@ -51,13 +51,29 @@ public static class EventBridge
     }
 
     public static void OnStateChange(GameState oldState, GameState newState)
+{
+    Print("STATE_CHANGE", new
     {
-        Print("STATE_CHANGE", new
-        {
-            oldState = oldState.ToString().ToLower(),
-            newState = newState.ToString().ToLower()
-        });
+        oldState = oldState.ToString().ToLower(),
+        newState = newState.ToString().ToLower()
+    });
+
+    // Only send webhooks in pelipaja mode
+    if (PelipajaConfig.Mode != "pelipaja") return;
+
+    var status = newState switch
+    {
+        GameState.PelipajaWaiting => "configuring",
+        GameState.Live => "live",
+        GameState.Loading when oldState == GameState.Live => "finished",
+        _ => null
+    };
+
+    if (status != null)
+    {
+        _ = WebhookClient.PostStatus(status);
     }
+}
 
     public static void OnPlayerConnect(EventPlayerConnectFull @event)
     {
