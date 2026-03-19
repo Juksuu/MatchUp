@@ -220,7 +220,7 @@ public class MatchUp : BasePlugin
     private static void OnCancelMatch(int userid, CCSPlayerController player)
     {
         var isOwner = PelipajaConfig.OwnerSteamId != null && player.SteamID.ToString() == PelipajaConfig.OwnerSteamId;
-        var isDev = player.SteamID.ToString() == "76561197970226616";
+        var isDev = player.SteamID.ToString() == "76561197970226616"; // Tomppahh steam64ID 
 
         if (!isOwner && !isDev)
         {
@@ -234,7 +234,10 @@ public class MatchUp : BasePlugin
 
     private static void OnConfirmCancel(int userid, CCSPlayerController player)
     {
-        if (PelipajaConfig.OwnerSteamId == null || player.SteamID.ToString() != PelipajaConfig.OwnerSteamId)
+        var isOwner = PelipajaConfig.OwnerSteamId != null && player.SteamID.ToString() == PelipajaConfig.OwnerSteamId;
+        var isDev = player.SteamID.ToString() == "76561197970226616"; // Tomppahh steam64ID 
+
+        if (!isOwner && !isDev)
         {
             player.PrintToChat($" {ChatColors.Red}You are not the match owner!");
             return;
