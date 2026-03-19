@@ -22,9 +22,11 @@ public static class PelipajaConfig {
     {
         WebhookUrl = Environment.GetEnvironmentVariable("MATCHUP_WEBHOOK_URL");
         ApiSecret = Environment.GetEnvironmentVariable("MATCHUP_API_SECRET");
+        MatchId = Environment.GetEnvironmentVariable("MATCHUP_MATCH_ID");
 
         Console.WriteLine($"[Pelipaja] WebhookUrl: {WebhookUrl}");
         Console.WriteLine($"[Pelipaja] ApiSecret set: {ApiSecret!=null}"); // sends a boolean true false
+        Console.WriteLine($"[Pelipaja] MatchId: {MatchId}");
         
         _ = WebhookClient.PostStatus("configuring"); // tell Nextjs that server is online to receive HTTP config
     }
