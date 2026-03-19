@@ -1,3 +1,5 @@
+namespace MatchUp;
+
 public class TeamInfo {
     public required string Name { get; set; }
     public List<string> Players { get; set; } = [];
