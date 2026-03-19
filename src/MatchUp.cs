@@ -18,6 +18,8 @@ public class MatchUp : BasePlugin
     public override void Load(bool hotReload)
     {
         base.Load(hotReload);
+        PelipajaConfig.Load();
+        HttpServer.Start();
         StateMachine.SwitchState(GameState.Loading);
 
         if (hotReload)
@@ -26,6 +28,12 @@ public class MatchUp : BasePlugin
         }
 
         RegisterListener<Listeners.OnMapStart>(_ => StateMachine.GetCurrentState().OnMapStart());
+    }
+
+    public override void Unload(bool hotReload)
+    {
+        HttpServer.Stop();
+        base.Unload(hotReload);
     }
 
     // Console commands
