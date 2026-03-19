@@ -219,14 +219,17 @@ public class MatchUp : BasePlugin
 
     private static void OnCancelMatch(int userid, CCSPlayerController player)
     {
-    if (PelipajaConfig.OwnerSteamId == null || player.SteamID.ToString() != PelipajaConfig.OwnerSteamId)
-    {
-        player.PrintToChat($" {ChatColors.Red}You are not the match owner!");
-        return;
-    }
+        var isOwner = PelipajaConfig.OwnerSteamId != null && player.SteamID.ToString() == PelipajaConfig.OwnerSteamId;
+        var isDev = player.SteamID.ToString() == "76561197970226616";
 
-    player.PrintToChat($" {ChatColors.Red}Are you sure you want to cancel the match?");
-    player.PrintToChat($" {ChatColors.Red}Type !confirmcancel to confirm.");
+        if (!isOwner && !isDev)
+        {
+            player.PrintToChat($" {ChatColors.Red}You are not the match owner!");
+            return;
+        }
+
+        player.PrintToChat($" {ChatColors.Red}Are you sure you want to cancel the match?");
+        player.PrintToChat($" {ChatColors.Red}Type !confirmcancel to confirm.");
     }
 
     private static void OnConfirmCancel(int userid, CCSPlayerController player)
