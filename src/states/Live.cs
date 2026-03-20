@@ -79,20 +79,27 @@ public class LiveState : BaseState
 
         Console.WriteLine($"Waiting for match end panel and cstv delay {delay}");
 
-        Utils.DelayedCall(TimeSpan.FromSeconds(delay), () =>
-        {
-            CstvManager.StopDemoRecording(scores);
+    Utils.DelayedCall(TimeSpan.FromSeconds(delay), () =>
+    {
+        CstvManager.StopDemoRecording(scores);
 
-            StateMachine.SwitchState(GameState.Loading);
-            if (!string.IsNullOrEmpty(MatchConfig.Map.WorkshopId))
-            {
-                Server.ExecuteCommand($"host_workshop_map {MatchConfig.Map.WorkshopId}");
-            }
-            else
-            {
-                Server.ExecuteCommand($"changelevel {MatchConfig.Map.Name}");
-            }
-        });
+        if (PelipajaConfig.Mode == "pelipaja")
+        {
+            // Next.js will destroy the container, no need to changelevel
+            Console.WriteLine("[Pelipaja] Match finished, waiting for container shutdown");
+            return;
+        }
+
+        StateMachine.SwitchState(GameState.Loading);
+        if (!string.IsNullOrEmpty(MatchConfig.Map.WorkshopId))
+        {
+            Server.ExecuteCommand($"host_workshop_map {MatchConfig.Map.WorkshopId}");
+        }
+        else
+        {
+            Server.ExecuteCommand($"changelevel {MatchConfig.Map.Name}");
+        }
+    });
     }
 
     private void OnPlayerPause(int userid)

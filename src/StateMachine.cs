@@ -10,7 +10,8 @@ public enum GameState
     ReadyUp,
     Knife,
     Live,
-    End
+    End,
+    PelipajaWaiting
 }
 
 public abstract class BaseState
@@ -49,6 +50,7 @@ public static class StateMachine
         { GameState.ReadyUp, new ReadyUpState() },
         { GameState.Live, new LiveState() },
         { GameState.Knife, new KnifeState() },
+        { GameState.PelipajaWaiting, new PelipajaWaitingState() },
     };
 
     public static void SwitchState(GameState state)

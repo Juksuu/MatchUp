@@ -18,6 +18,8 @@ public class MatchUp : BasePlugin
     public override void Load(bool hotReload)
     {
         base.Load(hotReload);
+        PelipajaConfig.Load();
+        HttpServer.Start();
         StateMachine.SwitchState(GameState.Loading);
 
         if (hotReload)
@@ -26,6 +28,12 @@ public class MatchUp : BasePlugin
         }
 
         RegisterListener<Listeners.OnMapStart>(_ => StateMachine.GetCurrentState().OnMapStart());
+    }
+
+    public override void Unload(bool hotReload)
+    {
+        HttpServer.Stop();
+        base.Unload(hotReload);
     }
 
     // Console commands
@@ -123,6 +131,17 @@ public class MatchUp : BasePlugin
             OnReset();
             return HookResult.Continue;
         }
+        if (command == "cancelmatch")
+        {
+            OnCancelMatch(@event.Userid, player);
+            return HookResult.Continue;
+        }
+
+        if (command == "confirmcancel")
+        {
+            OnConfirmCancel(@event.Userid, player);
+            return HookResult.Continue;
+        }
 
         var state = StateMachine.GetCurrentState();
 
@@ -135,7 +154,7 @@ public class MatchUp : BasePlugin
             return HookResult.Continue;
         }
 
-        Console.WriteLine($"Got command: {command}");
+        Console.WriteLine($"Got command : {command}");
         state.OnChatCommand(@event.Userid, command);
 
         return HookResult.Continue;
@@ -196,5 +215,35 @@ public class MatchUp : BasePlugin
                 Server.ExecuteCommand($"changelevel {MatchConfig.Map.Name}");
             }
         });
+    }
+
+    private static void OnCancelMatch(int userid, CCSPlayerController player)
+    {
+        var isOwner = PelipajaConfig.OwnerSteamId != null && player.SteamID.ToString() == PelipajaConfig.OwnerSteamId;
+        var isDev = player.SteamID.ToString() == "76561197970226616"; // Tomppahh steam64ID 
+
+        if (!isOwner && !isDev)
+        {
+            player.PrintToChat($" {ChatColors.Red}You are not the match owner!");
+            return;
+        }
+
+        player.PrintToChat($" {ChatColors.Red}Are you sure you want to cancel the match?");
+        player.PrintToChat($" {ChatColors.Red}Type !confirmcancel to confirm.");
+    }
+
+    private static void OnConfirmCancel(int userid, CCSPlayerController player)
+    {
+        var isOwner = PelipajaConfig.OwnerSteamId != null && player.SteamID.ToString() == PelipajaConfig.OwnerSteamId;
+        var isDev = player.SteamID.ToString() == "76561197970226616"; // Tomppahh steam64ID 
+
+        if (!isOwner && !isDev)
+        {
+            player.PrintToChat($" {ChatColors.Red} You are not the match owner!");
+            return;
+        }
+
+        Server.PrintToChatAll($" {ChatColors.Red}Match cancelled by {player.PlayerName}!");
+        _ = WebhookClient.PostStatus("cancelled");
     }
 }

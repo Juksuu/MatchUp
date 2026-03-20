@@ -55,7 +55,7 @@ public class ReadyUpState : BaseState
         var player = @event.Userid;
         if (player != null)
         {
-            player.PrintToChat($" {ChatColors.Green}Please type !ready to ready up!");
+            player.PrintToChat($" {ChatColors.Green}[Pelipaja] Please type !ready to ready up!");
         }
     }
 
