@@ -14,7 +14,7 @@ public static class WebhookClient
 
         if (string.IsNullOrEmpty(WebhookUrl) || string.IsNullOrEmpty(MatchId))
         {
-            Console.WriteLine("[Pelipaja] WebhookUrl or MatchId not set, skipping webhook.");
+            Console.WriteLine("[Pelipaja] WebhookUrl or MatchId not set. Skipping webhook.");
             return;
         }
 

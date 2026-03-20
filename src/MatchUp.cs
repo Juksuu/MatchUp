@@ -154,7 +154,7 @@ public class MatchUp : BasePlugin
             return HookResult.Continue;
         }
 
-        Console.WriteLine($"Got command: {command}");
+        Console.WriteLine($"Got command : {command}");
         state.OnChatCommand(@event.Userid, command);
 
         return HookResult.Continue;
@@ -239,7 +239,7 @@ public class MatchUp : BasePlugin
 
         if (!isOwner && !isDev)
         {
-            player.PrintToChat($" {ChatColors.Red}You are not the match owner!");
+            player.PrintToChat($" {ChatColors.Red} You are not the match owner!");
             return;
         }
 

@@ -61,9 +61,10 @@ public static class EventBridge
     // Only send webhooks in pelipaja mode
     if (PelipajaConfig.Mode != "pelipaja") return;
 
-    var status = newState switch
+   var status = newState switch
     {
         GameState.PelipajaWaiting => "configuring",
+        GameState.ReadyUp => PelipajaConfig.Mode == "pelipaja" ? "ready" : null,
         GameState.Live => "live",
         GameState.Loading when oldState == GameState.Live => "finished",
         _ => null
