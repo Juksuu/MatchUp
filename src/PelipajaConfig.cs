@@ -28,7 +28,7 @@ public static class PelipajaConfig {
         Console.WriteLine($"[Pelipaja] ApiSecret set: {ApiSecret!=null}"); // sends a boolean true false
         Console.WriteLine($"[Pelipaja] MatchId: {MatchId}");
 
-        _ = WebhookClient.PostStatus("configuring"); // tell Nextjs that server is online to receive HTTP config
+        WebhookClient.PostStatus("configuring"); // tell Nextjs that server is online to receive HTTP config
     }
 
     public static void SetMatchConfig(string mode, string matchId, string? ownerSteamId, TeamInfo team1, TeamInfo team2)

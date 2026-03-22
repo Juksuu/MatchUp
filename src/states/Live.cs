@@ -87,6 +87,7 @@ public class LiveState : BaseState
         {
             // Next.js will destroy the container, no need to changelevel
             Console.WriteLine("[Pelipaja] Match finished, waiting for container shutdown");
+            WebhookClient.PostStatus("finished");
             return;
         }
 

@@ -244,6 +244,6 @@ public class MatchUp : BasePlugin
         }
 
         Server.PrintToChatAll($" {ChatColors.Red}Match cancelled by {player.PlayerName}!");
-        _ = WebhookClient.PostStatus("cancelled");
+        WebhookClient.PostStatus("cancelled");
     }
 }

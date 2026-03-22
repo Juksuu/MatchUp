@@ -72,7 +72,7 @@ public static class EventBridge
 
     if (status != null)
     {
-        _ = WebhookClient.PostStatus(status);
+        WebhookClient.PostStatus(status);
     }
 }
 

@@ -6,30 +6,34 @@ namespace MatchUp;
 
 public static class WebhookClient
 {
-    
-    public static async Task PostStatus(string status)
-    {
-        var WebhookUrl = PelipajaConfig.WebhookUrl;
-        var MatchId =  PelipajaConfig.MatchId;
+    private static readonly HttpClient _client = new HttpClient();
 
-        if (string.IsNullOrEmpty(WebhookUrl) || string.IsNullOrEmpty(MatchId))
+   public static void PostStatus(string status)
+{
+    Task.Run(async () =>
+    {
+        var webhookUrl = PelipajaConfig.WebhookUrl;
+        var matchId = PelipajaConfig.MatchId;
+
+        if (string.IsNullOrEmpty(webhookUrl) || string.IsNullOrEmpty(matchId))
         {
-            Console.WriteLine("[Pelipaja] WebhookUrl or MatchId not set. Skipping webhook.");
+            Console.WriteLine("[Pelipaja] WebhookUrl or MatchId not set, skipping webhook");
             return;
         }
 
         try
         {
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer  {PelipajaConfig.ApiSecret}");
+            _client.DefaultRequestHeaders.Clear();
+            _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {PelipajaConfig.ApiSecret}");
             var json = JsonSerializer.Serialize(new { status });
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            await client.PostAsync($"{WebhookUrl}/api/matches/{MatchId}/status", content);
+            await _client.PostAsync($"{webhookUrl}/api/matches/{matchId}/status", content);
             Console.WriteLine($"[Pelipaja] Posted status: {status}");
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Console.WriteLine($"[Pelipaja] Failed to post status: {e.Message}");
         }
+    });
     }
 }
