@@ -11,9 +11,18 @@ namespace MatchUp;
 public class MatchUp : BasePlugin
 {
     public const string Version = "0.9.0";
+    private static int MatchCancelSwitch = 0;
 
     public override string ModuleName => "MatchUp";
     public override string ModuleVersion => Version;
+
+    private static bool CanControlMatch(CCSPlayerController player)
+    {
+        var steamId = player.SteamID.ToString();
+        var isOwner = steamId == PelipajaConfig.OwnerSteamId;
+        var isDev = steamId == "76561197970226616"; // Tomppahh steam64ID
+        return isOwner || isDev;
+    }
 
     public override void Load(bool hotReload)
     {
@@ -131,15 +140,24 @@ public class MatchUp : BasePlugin
             OnReset();
             return HookResult.Continue;
         }
+        
         if (command == "cancelmatch")
         {
-            OnCancelMatch(@event.Userid, player);
+            OnCancelMatch(player);
+            MatchCancelSwitch = 1;
             return HookResult.Continue;
         }
 
-        if (command == "confirmcancel")
+        if (command == "confirmcancel" && MatchCancelSwitch == 1)
         {
-            OnConfirmCancel(@event.Userid, player);
+            OnConfirmCancel(player);
+            MatchCancelSwitch = 0;
+            return HookResult.Continue;
+        }
+
+        if (command == "setmatchfinished")
+        {
+            SetMatchFinished(player);
             return HookResult.Continue;
         }
 
@@ -217,12 +235,10 @@ public class MatchUp : BasePlugin
         });
     }
 
-    private static void OnCancelMatch(int userid, CCSPlayerController player)
-    {
-        var isOwner = PelipajaConfig.OwnerSteamId != null && player.SteamID.ToString() == PelipajaConfig.OwnerSteamId;
-        var isDev = player.SteamID.ToString() == "76561197970226616"; // Tomppahh steam64ID 
 
-        if (!isOwner && !isDev)
+    private static void OnCancelMatch(CCSPlayerController player)
+    {
+        if (!CanControlMatch(player))
         {
             player.PrintToChat($" {ChatColors.Red}You are not the match owner!");
             return;
@@ -232,12 +248,9 @@ public class MatchUp : BasePlugin
         player.PrintToChat($" {ChatColors.Red}Type !confirmcancel to confirm.");
     }
 
-    private static void OnConfirmCancel(int userid, CCSPlayerController player)
+    private static void OnConfirmCancel(CCSPlayerController player)
     {
-        var isOwner = PelipajaConfig.OwnerSteamId != null && player.SteamID.ToString() == PelipajaConfig.OwnerSteamId;
-        var isDev = player.SteamID.ToString() == "76561197970226616"; // Tomppahh steam64ID 
-
-        if (!isOwner && !isDev)
+        if (!CanControlMatch(player))
         {
             player.PrintToChat($" {ChatColors.Red} You are not the match owner!");
             return;
@@ -245,5 +258,17 @@ public class MatchUp : BasePlugin
 
         Server.PrintToChatAll($" {ChatColors.Red}Match cancelled by {player.PlayerName}!");
         WebhookClient.PostStatus("cancelled");
+    }
+
+    private static void SetMatchFinished(CCSPlayerController player)
+    {
+        if (!CanControlMatch(player))
+        {
+            player.PrintToChat($" {ChatColors.Red} You dont have the privileges to do that!");
+            return;
+        }
+
+        Server.PrintToChatAll($" {ChatColors.Red}Match set finished state by {player.PlayerName}!");
+        WebhookClient.PostStatus("finished");
     }
 }
