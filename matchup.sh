@@ -31,6 +31,19 @@ install_matchup() {
         echo "addons/counterstrikesharp/bin/linuxsteamrt64/counterstrikesharp" >> "$addons_folder/metamod/metaplugins.ini"
       fi
     fi
+    # Create Metamod plugin descriptors (required for game to load Metamod)
+    cat > "$addons_folder/metamod.vdf" << 'VDFEOF'
+"Plugin"
+{
+	"file"	"addons/metamod/bin/server"
+}
+VDFEOF
+    cat > "$addons_folder/metamod_x64.vdf" << 'VDFEOF'
+"Plugin"
+{
+	"file"	"addons/metamod/bin/linux64/server"
+}
+VDFEOF
     if [ -d /tmp/matchup_unpack/addons/counterstrikesharp ]; then
       rm -rf "$addons_folder/counterstrikesharp"
       cp -a /tmp/matchup_unpack/addons/counterstrikesharp "$addons_folder/"

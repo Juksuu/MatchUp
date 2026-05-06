@@ -17,6 +17,21 @@ unzip counterstrikesharp-with-runtime-linux-${CSSAPI_VERSION}.zip
 rm counterstrikesharp-with-runtime-linux-${CSSAPI_VERSION}.zip
 wget -c https://mms.alliedmods.net/mmsdrop/2.0/mmsource-2.0.0-git${METAMOD_VERSION}-linux.tar.gz -O - | tar -xz
 
+# Create Metamod plugin descriptors (required for Metamod to load)
+cat > addons/metamod.vdf << 'EOF'
+"Plugin"
+{
+	"file"	"addons/metamod/bin/server"
+}
+EOF
+
+cat > addons/metamod_x64.vdf << 'EOF'
+"Plugin"
+{
+	"file"	"addons/metamod/bin/linux64/server"
+}
+EOF
+
 # Ensure metaplugins.ini includes the CounterStrikeSharp plugin
 if [ -f addons/metamod/metaplugins.ini ]; then
   if ! grep -q "counterstrikesharp" addons/metamod/metaplugins.ini; then
