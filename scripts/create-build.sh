@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-METAMOD_VERSION=1389
+METAMOD_VERSION=1401
 CSSAPI_VERSION=$(dotnet list package --format json | jq -r '.projects[0].frameworks.[0].topLevelPackages.[] | select(.id == "CounterStrikeSharp.API") | .requestedVersion')
 
 mkdir -p build
@@ -10,7 +10,7 @@ wget -q https://github.com/roflmuffin/CounterStrikeSharp/releases/download/v${CS
 unzip counterstrikesharp-with-runtime-linux-${CSSAPI_VERSION}.zip
 rm counterstrikesharp-with-runtime-linux-${CSSAPI_VERSION}.zip
 
-wget -c https://mms.alliedmods.net/mmsdrop/2.0/mmsource-2.0.0-git${METAMOD_VERSION}-linux.tar.gz -O - | tar -xz
+wget -c https://github.com/alliedmodders/metamod-source/releases/download/2.0.0.${METAMOD_VERSION}/mmsource-2.0.0-git${METAMOD_VERSION}-linux.tar.gz -O - | tar -xz
 
 cd ..
 
