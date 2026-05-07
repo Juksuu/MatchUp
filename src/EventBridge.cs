@@ -13,6 +13,8 @@ namespace MatchUp;
  */
 public static class EventBridge
 {
+    private static string? _lastSentStatus = null;
+
     private static void Print(string tag, object data)
     {
         if (!MatchConfig.EventBridgeEnabled) return;
@@ -51,30 +53,32 @@ public static class EventBridge
     }
 
     public static void OnStateChange(GameState oldState, GameState newState)
-{
-    Print("STATE_CHANGE", new
     {
-        oldState = oldState.ToString().ToLower(),
-        newState = newState.ToString().ToLower()
-    });
+        Print("STATE_CHANGE", new
+        {
+            oldState = oldState.ToString().ToLower(),
+            newState = newState.ToString().ToLower()
+        });
 
-    // Only send webhooks in pelipaja mode
-    if (PelipajaConfig.Mode != "pelipaja") return;
+        // Only send webhooks in pelipaja mode
+        if (PelipajaConfig.Mode != "pelipaja") return;
 
-   var status = newState switch
-    {
-        GameState.PelipajaWaiting => "configuring",
-        GameState.ReadyUp => PelipajaConfig.Mode == "pelipaja" ? "ready" : null,
-        GameState.Live => "live",
-        GameState.Loading when oldState == GameState.Live => "finished",
-        _ => null
-    };
+        var status = newState switch
+        {
+            GameState.PelipajaWaiting => "configuring",
+            GameState.ReadyUp => PelipajaConfig.Mode == "pelipaja" ? "ready" : null,
+            GameState.Live => "live",
+            GameState.Loading when oldState == GameState.Live => "finished",
+            _ => null
+        };
 
-    if (status != null)
-    {
-        WebhookClient.PostStatus(status);
+        // Only send webhook if status changed (prevents duplicate requests)
+        if (status != null && status != _lastSentStatus)
+        {
+            _lastSentStatus = status;
+            WebhookClient.PostStatus(status);
+        }
     }
-}
 
     public static void OnPlayerConnect(EventPlayerConnectFull @event)
     {
