@@ -9,16 +9,7 @@ cd build
 wget -q https://github.com/roflmuffin/CounterStrikeSharp/releases/download/v${CSSAPI_VERSION}/counterstrikesharp-with-runtime-linux-${CSSAPI_VERSION}.zip
 unzip counterstrikesharp-with-runtime-linux-${CSSAPI_VERSION}.zip
 rm counterstrikesharp-with-runtime-linux-${CSSAPI_VERSION}.zip
-
-
-```
-wget -c https://mms.alliedmods.net/mmsdrop/2.0/mmsource-2.0.0-git${METAMOD_VERSION}-linux.tar.gz -O - | tar -xz
-```
-
-tähän
-```
 wget -c https://github.com/alliedmodders/metamod-source/releases/download/2.0.0.${METAMOD_VERSION}/mmsource-2.0.0-git${METAMOD_VERSION}-linux.tar.gz -O - | tar -xz
-```
 
 cd ..
 
