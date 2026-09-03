@@ -21,7 +21,7 @@
         {
           default = pkgs.mkShell {
             packages = with pkgs; [
-              dotnetCorePackages.sdk_9_0-bin
+              dotnetCorePackages.sdk_10_0-bin
               omnisharp-roslyn
 
               unzip

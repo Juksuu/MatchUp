@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-METAMOD_VERSION=1401
+METAMOD_VERSION=1411
 CSSAPI_VERSION=$(dotnet list package --format json | jq -r '.projects[0].frameworks.[0].topLevelPackages.[] | select(.id == "CounterStrikeSharp.API") | .requestedVersion')
 
 mkdir -p build
@@ -19,7 +19,7 @@ dotnet build -c Release
 mkdir -p build/addons/counterstrikesharp/plugins/MatchUp
 mkdir -p build/cfg
 
-cp bin/Release/net8.0/* build/addons/counterstrikesharp/plugins/MatchUp/
+cp bin/Release/net10.0/* build/addons/counterstrikesharp/plugins/MatchUp/
 
 cp -R cfg/* build/cfg/
 
