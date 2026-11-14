@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-METAMOD_VERSION=1411
+METAMOD_VERSION=1490
 CSSAPI_VERSION=$(dotnet list package --format json | jq -r '.projects[0].frameworks.[0].topLevelPackages.[] | select(.id == "CounterStrikeSharp.API") | .requestedVersion')
 
 mkdir -p build
